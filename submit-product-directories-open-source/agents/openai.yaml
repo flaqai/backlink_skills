@@ -1,4 +1,0 @@
-interface:
-  display_name: "Open Source Product Directory Submitter"
-  short_description: "Portable, auditable product-directory workflow"
-  default_prompt: "Use $submit-product-directories-open-source to plan or execute a truthful, evidence-backed directory submission campaign."
