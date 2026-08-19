@@ -12,6 +12,10 @@ Last updated: [ISO-8601 timestamp]
 - Batch authorization reference: [opaque authorization ID]
 - Execution-shard size: [number]
 - Maximum active tabs: [number]
+- Host platform: [windows / macos / linux / other]
+- UI environment: [desktop / remote desktop / headless / unknown]
+- Available control capabilities: [non-secret capability aliases]
+- Browser-routing policy: explicit choice; connector/API/CLI; supported browser runtime; OS-matched desktop UI control; user handoff
 - Credential policy: aliases only; no secrets in record
 - Evidence policy: controlled evidence IDs only
 - Duplicate policy: never execute a completed or pending idempotency key
@@ -31,6 +35,11 @@ Last updated: [ISO-8601 timestamp]
 - Account alias: [alias or not applicable]
 - Idempotency key: [domain|product|account|route]
 - Execution shard: [shard ID]
+- Platform capability result: [supported / supported with handoff / unavailable]
+- Requested browser constraint: [browser/app alias or not specified]
+- Selected browser surface: [in-app browser / connected browser / desktop app / user handoff]
+- Execution backend/session alias: [non-secret aliases]
+- Backend selection reason: [short reason]
 - Legitimacy gate: [passed / failed]
 - Authorization reference: [opaque authorization ID]
 - Status: not attempted

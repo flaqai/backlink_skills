@@ -27,6 +27,10 @@ Last updated: 2026-08-18T16:00:00+08:00
 - Batch authorization reference: auth-batch-001
 - Execution-shard size: 20
 - Maximum active tabs: 5
+- Host platform: linux
+- UI environment: desktop
+- Available control capabilities: connected browser runtime; user handoff
+- Browser-routing policy: explicit choice; connector/API/CLI; supported browser runtime; OS-matched desktop UI control; user handoff
 - Credential policy: aliases only; no secrets in record
 - Evidence policy: controlled evidence IDs only
 - Duplicate policy: never execute a completed or pending idempotency key
@@ -64,6 +68,11 @@ def site(
 - Account alias: account-001
 - Idempotency key: {idem}
 - Execution shard: shard-001
+- Platform capability result: supported
+- Requested browser constraint: not specified
+- Selected browser surface: connected browser
+- Execution backend/session alias: browser-runtime / session-main
+- Backend selection reason: supported structured browser control
 - Legitimacy gate: {legitimacy}
 - Authorization reference: auth-batch-001
 - Status: {status}
@@ -123,6 +132,11 @@ class AuditTests(unittest.TestCase):
         result = MODULE.audit(record(site(extra="- Password: person@example.com\n")))
         self.assertFalse(result["valid"])
         self.assertTrue(any("raw email" in item for item in result["errors"]))
+
+    def test_invalid_host_platform_fails(self) -> None:
+        result = MODULE.audit(record(site()).replace("- Host platform: linux", "- Host platform: solaris"))
+        self.assertFalse(result["valid"])
+        self.assertTrue(any("Host platform" in item for item in result["errors"]))
 
 
 if __name__ == "__main__":

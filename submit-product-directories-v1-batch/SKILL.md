@@ -1,6 +1,6 @@
 ---
 name: submit-product-directories-v1-batch
-description: SPD V1 Batch. Process large, user-supplied sets of legitimate product, software, startup, app, and AI-tool directory URLs through normalization, deduplication, execution sharding, verification-first queues, authorization-controlled form work, idempotent submission, recovery, and truthful throughput reporting. Use when coverage and operational throughput matter more than deep per-site quality analysis. Do not use for ranking manipulation, bulk link spam, invented data, CAPTCHA bypass, paid-link acquisition, forced reciprocal links, or routes prohibited by a site's terms.
+description: SPD V1 Batch. Process large, user-supplied sets of legitimate product, software, startup, app, and AI-tool directory URLs across Windows, macOS, and Linux-capable environments through normalization, deduplication, execution sharding, verification-first queues, authorization-controlled form work, idempotent submission, recovery, and truthful throughput reporting. Use when coverage and operational throughput matter more than deep per-site quality analysis. Do not use for ranking manipulation, bulk link spam, invented data, CAPTCHA bypass, paid-link acquisition, forced reciprocal links, or routes prohibited by a site's terms.
 ---
 
 # SPD V1 Batch — large-batch directory operations
@@ -18,7 +18,7 @@ description: SPD V1 Batch. Process large, user-supplied sets of legitimate produ
 1. Read the verified product profile, brand rules, contact and credential aliases, approved assets, source list, batch authorization, and existing record.
 2. Read [references/workflow.md](references/workflow.md) before planning or browser work.
 3. Read [references/status-model.md](references/status-model.md) before writing or auditing records.
-4. Read [references/computer-use-bitbrowser.md](references/computer-use-bitbrowser.md) before controlling BitBrowser.
+4. Read [references/browser-control-routing.md](references/browser-control-routing.md) before any browser or app interaction. Run the Windows/macOS/Linux capability preflight and select the backend from the current environment; do not assume a specific browser, operating system, or Computer Use support.
 5. Copy [assets/submission-record-template.md](assets/submission-record-template.md) when no V1 Batch record exists.
 
 Never invent product, company, founder, pricing, address, launch, ownership, contact, or legal facts. Keep optional unknowns blank and block required unknowns.
@@ -67,9 +67,18 @@ Use only the exact brand, product name, or naked canonical URL as public link te
 
 Run:
 
+On macOS or Linux:
+
 ```bash
 python3 scripts/audit_submission_record.py path/to/v1-batch-record.md
 python3 scripts/audit_submission_record.py path/to/v1-batch-record.md --json
+```
+
+On Windows, use `py -3` or an equivalent Python 3 launcher:
+
+```powershell
+py -3 scripts/audit_submission_record.py path\to\v1-batch-record.md
+py -3 scripts/audit_submission_record.py path\to\v1-batch-record.md --json
 ```
 
 Report totals by queue state, verification state, shard, and outcome. Measure queue completion rate, verified submissions per operator hour, duplicate avoidance, recovery rate, and unresolved manual workload. Report published listings separately from submitted forms. Do not report submission volume as proof of SEO value.
@@ -78,6 +87,6 @@ Report totals by queue state, verification state, shard, and outcome. Measure qu
 
 - [references/workflow.md](references/workflow.md): sharding, verification queues, execution, and recovery.
 - [references/status-model.md](references/status-model.md): record schema and state invariants.
-- [references/computer-use-bitbrowser.md](references/computer-use-bitbrowser.md): BitBrowser control rules.
+- [references/browser-control-routing.md](references/browser-control-routing.md): backend-neutral browser selection, interaction, confirmation, recovery, and evidence rules.
 - [assets/submission-record-template.md](assets/submission-record-template.md): privacy-safe V1 Batch template.
 - `scripts/audit_submission_record.py`: batch integrity, secret, duplicate, and state auditor.

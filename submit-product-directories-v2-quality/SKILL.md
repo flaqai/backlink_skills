@@ -1,6 +1,6 @@
 ---
 name: submit-product-directories-v2-quality
-description: SPD V2 Quality. Discover, deeply qualify, submit, and audit truthful product listings on relevant product, software, startup, app, and AI-tool directories with audience-value screening, SEO quality gates, action-level authorization, privacy controls, and evidence-backed records. Use when listing quality, referral value, governance, durability, and auditable compliance matter more than submission volume. Do not use for bulk backlink creation, ranking manipulation, guest posts, community promotion, mass email, paid link acquisition, or automatic submission to low-quality directories.
+description: SPD V2 Quality. Discover, deeply qualify, submit, and audit truthful product listings across Windows, macOS, and Linux-capable environments on relevant product, software, startup, app, and AI-tool directories with audience-value screening, SEO quality gates, action-level authorization, privacy controls, and evidence-backed records. Use when listing quality, referral value, governance, durability, and auditable compliance matter more than submission volume. Do not use for bulk backlink creation, ranking manipulation, guest posts, community promotion, mass email, paid link acquisition, or automatic submission to low-quality directories.
 ---
 
 # SPD V2 Quality — quality-oriented directory discovery and submission
@@ -23,9 +23,10 @@ Run directory discovery and listing work as a compliance-gated state machine. Op
 2. Read [references/seo-quality-gate.md](references/seo-quality-gate.md) before selecting or qualifying any site.
 3. Read [references/authorization.md](references/authorization.md) before any action beyond read-only inspection.
 4. Read [references/workflow.md](references/workflow.md) before browser work.
-5. Read [references/status-model.md](references/status-model.md) before creating, updating, or auditing records.
-6. Read [references/route-boundaries.md](references/route-boundaries.md) when a candidate is an article, community, email, contact, resource-page, or partnership route.
-7. Copy [assets/submission-record-template.md](assets/submission-record-template.md) when no record exists.
+5. Read [references/browser-control-routing.md](references/browser-control-routing.md) before any browser or app interaction. Run the Windows/macOS/Linux capability preflight and select the backend from the current environment; do not assume a specific browser, operating system, or Computer Use support.
+6. Read [references/status-model.md](references/status-model.md) before creating, updating, or auditing records.
+7. Read [references/route-boundaries.md](references/route-boundaries.md) when a candidate is an article, community, email, contact, resource-page, or partnership route.
+8. Copy [assets/submission-record-template.md](assets/submission-record-template.md) when no record exists.
 
 Never invent company, founder, pricing, address, launch, user-count, social, legal, ownership, or contact facts. Leave optional unknowns blank; mark required unknowns `blocked — missing verified data`.
 
@@ -75,9 +76,18 @@ Do not batch articles, guest posts, community posts, press releases, cold email,
 
 Run:
 
+On macOS or Linux:
+
 ```bash
 python3 scripts/audit_submission_record.py path/to/record.md
 python3 scripts/audit_submission_record.py path/to/record.md --json
+```
+
+On Windows, use `py -3` or an equivalent Python 3 launcher:
+
+```powershell
+py -3 scripts/audit_submission_record.py path\to\record.md
+py -3 scripts/audit_submission_record.py path\to\record.md --json
 ```
 
 The auditor must fail on missing campaign controls, invalid or expired authorization, failed quality gates followed by execution, incompatible phase/status/evidence combinations, secret exposure, unsafe link relationships, duplicate idempotency keys, duplicate tracking variants, invalid event logs, or incomplete unknown-outcome checks.
@@ -89,6 +99,7 @@ Use qualified publication rate, referral visits, referral conversion, profile ac
 - [references/seo-quality-gate.md](references/seo-quality-gate.md): SEO purpose boundary and mandatory site-quality screening.
 - [references/authorization.md](references/authorization.md): machine-auditable authorization model.
 - [references/workflow.md](references/workflow.md): two-pass execution and recovery procedure.
+- [references/browser-control-routing.md](references/browser-control-routing.md): backend-neutral browser selection, interaction, confirmation, recovery, and evidence rules.
 - [references/status-model.md](references/status-model.md): state, evidence, event, and link-attribute rules.
 - [references/route-boundaries.md](references/route-boundaries.md): supported routes and mandatory handoffs.
 - [assets/submission-record-template.md](assets/submission-record-template.md): privacy-safe campaign template.

@@ -7,6 +7,7 @@
 3. Store approved product/contact/assets in controlled sources. Put only aliases and hashes in the public record.
 4. Normalize source URLs by lowercasing hostnames, removing fragments, removing default ports, sorting required parameters, and dropping tracking parameters such as `utm_*`, `gclid`, `fbclid`, and `msclkid`.
 5. Derive `platform domain | product canonical ID | account alias | route` as the idempotency key.
+6. Apply [browser-control-routing.md](browser-control-routing.md). Detect `windows`, `macos`, `linux`, or `other`; detect desktop, remote, or headless UI availability; inventory compatible control capabilities; then record the requested browser constraint, selected surface, backend/session aliases, and selection reason without storing local paths or secret session data.
 
 ## Pass A — read-only research and verification
 
@@ -33,6 +34,8 @@ Present one ordered queue with platform, normalized route, profile alias, challe
 5. Before a final action, verify plan, cost, brand, canonical URL, contact alias, category, price, assets, agreements, relationship disclosures, and verification state.
 6. Execute only actions with a matching `allowed` authorization valid for the domain and event time.
 7. Capture exact response, evidence type, opaque evidence-store ID, capture time, retention date, and resulting URL.
+
+The selected runtime's confirmation and handoff policy remains authoritative at action time. An `allowed` campaign entry cannot waive a required confirmation or user handoff.
 
 ## Outcome and retry
 

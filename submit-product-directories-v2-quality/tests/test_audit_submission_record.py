@@ -47,6 +47,10 @@ Last updated: 2026-08-18T10:10:00+08:00
 - Evidence store: evidence-vault
 - Evidence retention policy: retention-30d
 - Execution modes: manual; automated
+- Host platform: windows
+- UI environment: desktop
+- Available control capabilities: connected browser runtime; user handoff
+- Browser routing policy: explicit choice; connector/API/CLI; supported browser runtime; OS-matched desktop UI control; user handoff
 - Rollout stage: pilot
 - Maximum sites this batch: 10
 - Per-site approval required: yes
@@ -151,7 +155,11 @@ def site(
 - Status: **{status}**
 - Listing plan/cost: free
 - Execution mode: automated
+- Platform capability result: supported
+- Requested browser constraint: not specified
+- Selected browser surface: connected browser
 - Execution backend/profile alias: browser / profile-main
+- Backend selection reason: supported structured browser control
 - Account/login: account-main
 - Credential source: credential-vault
 - Verification preflight: no verification presented
@@ -370,6 +378,15 @@ class AuditV2Tests(unittest.TestCase):
         report = AUDIT.audit_text(full_record(first, second))
         self.assertFalse(report["valid"])
         self.assertTrue(any("duplicate event ID" in error for error in report["errors"]))
+
+    def test_unavailable_platform_capability_blocks_form_work(self) -> None:
+        item = site("submitted").replace(
+            "- Platform capability result: supported",
+            "- Platform capability result: unavailable",
+        )
+        report = AUDIT.audit_text(full_record(item))
+        self.assertFalse(report["valid"])
+        self.assertTrue(any("compatible platform capability" in error for error in report["errors"]))
 
 
 if __name__ == "__main__":

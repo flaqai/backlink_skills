@@ -8,6 +8,9 @@
 - Source-list reference
 - Batch authorization reference
 - Execution-shard size and maximum active tabs
+- Host platform and UI environment
+- Available control capabilities
+- Browser-routing policy
 - Credential and evidence policy
 - Duplicate and ambiguous-outcome policy
 
@@ -18,6 +21,11 @@
 - Route and account alias
 - Idempotency key
 - Execution shard
+- Platform capability result
+- Requested browser constraint
+- Selected browser surface
+- Execution backend/session alias
+- Backend selection reason
 - Legitimacy gate
 - Authorization reference
 - Status
@@ -69,6 +77,7 @@
 - Do not start or complete a form while verification is unresolved unless the site exposes verification only after mandatory form fields and the exception is recorded.
 - Do not execute a failed legitimacy gate or missing/expired authorization.
 - Keep idempotency keys unique across the campaign.
+- Use only `windows`, `macos`, `linux`, or `other` for Host platform. A desktop backend must declare support for that platform; otherwise use another compatible route or handoff.
 - Treat registration, login, draft save, navigation, a click, or a generic thank-you page as insufficient evidence of submission.
 - Never store secrets, raw contact data, private session IDs, or tokenized authentication URLs in the shareable record.
 

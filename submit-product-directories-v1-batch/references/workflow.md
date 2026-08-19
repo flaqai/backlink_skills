@@ -10,6 +10,7 @@ Record:
 - product canonical ID and canonical URL;
 - source-list reference and authorization reference;
 - execution-shard size and maximum active tabs;
+- normalized host platform, UI environment, available control capabilities, browser-routing policy, and selected backend/session aliases;
 - permitted actions, scope, approver alias, approval time, and expiry;
 - prohibited actions, including payment, reciprocal-site modification, and DNS changes unless separately approved.
 
@@ -45,6 +46,8 @@ Classify passing routes by operational lane:
 
 Split the passing queue by route and browser capacity. Configure shard size explicitly; a practical default may be chosen for local resources, but it is not a search-engine safety threshold.
 
+Before opening the first shard, apply [browser-control-routing.md](browser-control-routing.md). Detect `windows`, `macos`, `linux`, or `other`; detect desktop, remote, or headless UI availability; and inventory compatible control capabilities. Honor an explicit browser choice, use a supported browser runtime when available, use only a desktop UI adapter whose declared target matches the host platform, and hand off rather than silently switching browsers. Store environment-specific identifiers outside the shareable record.
+
 Within each shard:
 
 1. order account and email-verification work first;
@@ -52,6 +55,7 @@ Within each shard:
 3. cap active tabs at the recorded limit;
 4. keep one queue cursor and one immutable attempt log;
 5. isolate browser profiles when account identity or session ownership differs.
+6. keep each site bound to the selected backend and session alias until it reaches a recorded handoff or terminal state.
 
 ## 5. Run verification preflight
 
@@ -88,6 +92,8 @@ Process eligible items sequentially within a profile:
 7. submit only when the final action is allowed;
 8. capture exact server text and controlled evidence reference;
 9. advance the queue cursor only after the record is saved.
+
+Apply the selected runtime's confirmation and handoff policy at action time. Campaign authorization cannot weaken that policy.
 
 Never retry an ambiguous final action. Mark `submission outcome unknown`, then inspect the account backend, mailbox, and public search before any future attempt.
 

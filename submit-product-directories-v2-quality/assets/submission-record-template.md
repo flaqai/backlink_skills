@@ -14,6 +14,10 @@ Last updated: [ISO 8601 timestamp with timezone]
 - Evidence store: [opaque controlled-store alias]
 - Evidence retention policy: [duration or policy ID]
 - Execution modes: [manual / automated / mixed]
+- Host platform: [windows / macos / linux / other]
+- UI environment: [desktop / remote desktop / headless / unknown]
+- Available control capabilities: [non-secret capability aliases]
+- Browser routing policy: explicit choice; connector/API/CLI; supported browser runtime; OS-matched desktop UI control; user handoff
 - Rollout stage: pilot
 - Maximum sites this batch: 10
 - Per-site approval required: yes
@@ -61,7 +65,11 @@ Last updated: [ISO 8601 timestamp with timezone]
 - Status: **not attempted**
 - Listing plan/cost: [value]
 - Execution mode: [manual/automated/mixed/not applicable]
+- Platform capability result: [supported / supported with handoff / unavailable]
+- Requested browser constraint: [browser/app alias or not specified]
+- Selected browser surface: [in-app browser / connected browser / desktop app / user handoff]
 - Execution backend/profile alias: [non-secret aliases]
+- Backend selection reason: [short reason]
 - Account/login: [opaque account alias and method or none]
 - Credential source: [secret-manager alias or not applicable]
 - Verification preflight: not checked

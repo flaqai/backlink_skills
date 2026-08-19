@@ -58,6 +58,8 @@ deferred by user
 
 Form and post-submit states require `Quality gate: passed`. An unresolved verification state cannot coexist with form or post-submit execution.
 
+The campaign records normalized host platform (`windows`, `macos`, `linux`, or `other`), UI environment, and available control capabilities. Every site also records its platform capability result, requested browser constraint, selected browser surface, execution backend/profile alias, and backend selection reason. A desktop backend must declare support for the recorded platform; otherwise use another compatible route or handoff. These values are non-secret aliases; local application paths, process arguments, ports, profile IDs, cookies, and authentication URLs are prohibited in the shareable record.
+
 ## Evidence fields
 
 For any evidence-backed state record:

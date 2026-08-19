@@ -73,6 +73,10 @@ CAMPAIGN_REQUIRED_FIELDS = {
     "evidence store",
     "evidence retention policy",
     "execution modes",
+    "host platform",
+    "ui environment",
+    "available control capabilities",
+    "browser routing policy",
     "rollout stage",
     "maximum sites this batch",
     "per-site approval required",
@@ -85,7 +89,8 @@ SITE_REQUIRED_FIELDS = {
     "route", "idempotency key", "quality gate", "audience relevance", "user/discovery value",
     "editorial/platform governance", "paid/ranking-link offer", "directory/network quality",
     "automation/terms compatibility", "reciprocal link requirement", "phase", "status",
-    "listing plan/cost", "execution mode", "execution backend/profile alias", "account/login",
+    "listing plan/cost", "execution mode", "platform capability result", "requested browser constraint", "selected browser surface",
+    "execution backend/profile alias", "backend selection reason", "account/login",
     "credential source", "verification preflight", "manual-verification queue", "duplicate check",
     "fields entered", "fields omitted", "category", "asset reference", "asset sha-256",
     "agreements", "subscriptions", "captcha/authentication", "artifact stage", "first opened",
@@ -376,6 +381,12 @@ def validate_campaign(text: str) -> tuple[dict[str, str], dict[str, dict[str, st
         errors.append("V2 requires Rollout stage: pilot")
     if normalize_token(campaign.get("per-site approval required", "")) != "yes":
         errors.append("V2 requires Per-site approval required: yes")
+    if normalize_token(campaign.get("host platform", "")) not in {"windows", "macos", "linux", "other"}:
+        errors.append("Host platform must be windows, macos, linux, or other")
+    if normalize_token(campaign.get("ui environment", "")) not in {"desktop", "remote desktop", "headless", "unknown"}:
+        errors.append("UI environment must be desktop, remote desktop, headless, or unknown")
+    if not is_meaningful(campaign.get("available control capabilities", "")):
+        errors.append("Available control capabilities must record at least one capability or user handoff")
     try:
         maximum_sites = int(compact(campaign.get("maximum sites this batch", "")))
     except ValueError:
@@ -648,6 +659,11 @@ def validate_site(
     validate_quality(site)
     if category in FORM_OR_LATER and site["quality_gate"] != "passed":
         errors.append("form/post-submit status requires Quality gate: passed")
+    capability_result = normalize_token(fields.get("platform capability result", ""))
+    if capability_result not in {"supported", "supported with handoff", "unavailable"}:
+        errors.append("invalid platform capability result")
+    if category in FORM_OR_LATER and capability_result == "unavailable":
+        errors.append("form/post-submit status requires a compatible platform capability")
 
     submission_url = fields.get("submission url", "")
     platform_domain = normalize_token(fields.get("platform domain", ""))
