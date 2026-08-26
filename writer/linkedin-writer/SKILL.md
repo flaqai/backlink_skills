@@ -205,7 +205,7 @@ For each material claim, record:
 - source title, publisher, date, and URL;
 - status: `verified`, `user_provided`, `needs_verification`, `softened`, `removed`, or `unsupported`;
 - where it will appear;
-- caveat or expiry risk.
+- caveat or expiry risk;
 - research origin: user material / primary source / LinkedIn conversation / Google-discovered LinkedIn result / editorial synthesis.
 
 Prefer original LinkedIn Help pages for platform behavior, original reports for research claims, official product pages for current capabilities, and authoritative sources for policy or high-risk topics. Search snippets are discovery aids, not final evidence.
