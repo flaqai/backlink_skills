@@ -301,7 +301,7 @@ The script can check:
 - SEO title and description lengths when written in the expected labels;
 - presence of a discussion question signal;
 - hashtag count in the publishing pack;
-- clusters of generic openings, hype, or unverified first-person claims.
+- clusters of generic openings, hype, or unverified first-person claims;
 - clusters of templated, ceremonial, or synthetic-sounding LinkedIn style signals;
 - presence of several common business-depth signals such as economics, ownership, implementation, risk, measurement, and scenarios.
 
