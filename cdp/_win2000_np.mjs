@@ -1,0 +1,17 @@
+import { CDP, sleep } from './CDP.mjs';
+import fs from 'fs';
+const [,, domain] = process.argv;
+const base = 'http://127.0.0.1:9224';
+const tabs = await (await fetch(base+'/json/list')).json();
+const tab = tabs.find(t => t.type==='page' && t.url.includes(domain));
+const ws = new WebSocket(tab.webSocketDebuggerUrl);
+await new Promise((res,rej)=>{ws.onopen=res;ws.onerror=rej;});
+const c = new CDP(ws);
+await c.send('Page.enable');
+await c.send('Page.navigate',{url:'https://'+domain+'/new-post'});
+await sleep(8000);
+const out = await c.evalT("(function(){var N=String.fromCharCode(10);return 'HREF='+location.href+'<<>>'+document.body.innerText.slice(0,500).split(N).join('~');})()", 10000);
+console.log(out);
+const shot = await c.send('Page.captureScreenshot',{format:'png'});
+fs.writeFileSync('D:/Github/seoadminC/storage/_win2000_np_'+domain.split('.').join('_')+'.png', Buffer.from(shot.data,'base64'));
+process.exit(0);

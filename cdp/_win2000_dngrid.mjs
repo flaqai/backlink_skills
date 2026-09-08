@@ -1,0 +1,12 @@
+import { CDP, sleep } from './CDP.mjs';
+import fs from 'fs';
+const list = await (await fetch('http://127.0.0.1:9224/json/list')).json();
+const page = list.find(t => t.type === 'page' && /directorynode\.com/.test(t.url));
+const ws = new WebSocket(page.webSocketDebuggerUrl);
+await new Promise((res, rej) => { ws.onopen = res; ws.onerror = rej; });
+const c = new CDP(ws);
+await c.send('Page.enable');
+const bf = JSON.parse(await c.evalT(`(() => { const f = document.querySelector('iframe[src*="bframe"]'); const r = f.getBoundingClientRect(); return JSON.stringify({x:r.x,y:r.y,w:r.width,h:r.height}); })()`, 5000));
+const shot = await c.send('Page.captureScreenshot', { format: 'png', clip: { x: bf.x, y: bf.y, width: bf.w, height: bf.h, scale: 2 } });
+fs.writeFileSync('D:/Github/backlink_skills/_win2000_dn_grid.png', Buffer.from(shot.data, 'base64'));
+console.log('grid saved', JSON.stringify(bf));

@@ -1,0 +1,21 @@
+import { CDP, sleep } from './CDP.mjs';
+const tabs = await (await fetch('http://127.0.0.1:9224/json/list')).json();
+const tab = tabs.find(t => (t.url || '').includes('digabusiness') && t.type === 'page');
+const ws = new WebSocket(tab.webSocketDebuggerUrl);
+await new Promise(r => ws.onopen = r);
+const cdp = new CDP(ws);
+await cdp.send('Page.enable');
+const btn = await cdp.eval(`(() => {
+  const b = document.querySelector('input[name="submit"][value="Continue"]');
+  if (!b) return 'NOBTN';
+  b.scrollIntoView({block:'center'});
+  const r = b.getBoundingClientRect();
+  return JSON.stringify({x: Math.round(r.x + r.width/2), y: Math.round(r.y + r.height/2)});
+})()`);
+console.log('btn:', btn);
+const {x, y} = JSON.parse(btn);
+for (const ty of ['mousePressed','mouseReleased']) await cdp.send('Input.dispatchMouseEvent', { type: ty, x, y, button: 'left', clickCount: 1 });
+await sleep(5000);
+const page = await cdp.evalT(`document.body.innerText.replace(/\s+/g,' ').slice(0, 300)`, 8000);
+console.log('AFTER:', page);
+process.exit(0);

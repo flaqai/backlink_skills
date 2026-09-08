@@ -1,0 +1,11 @@
+import { CDP, sleep } from './CDP.mjs';
+const base = 'http://127.0.0.1:9224';
+let tabs = await (await fetch(base+'/json/list')).json();
+let tab = tabs.find(t => t.type==='page' && t.url.includes('wordpress.com'));
+const ws = new WebSocket(tab.webSocketDebuggerUrl);
+await new Promise((res,rej)=>{ws.onopen=res;ws.onerror=rej;});
+const c = new CDP(ws);
+await c.send('Page.enable');
+const out = await c.evalT("(function(){var links=[...document.querySelectorAll('a')].filter(function(a){return /leoxmseo2.wordpress.com\//.test(a.href)&&!/wp-admin/.test(a.href)}).map(function(a){return (a.innerText||'').trim().slice(0,25)+' => '+a.href}).slice(0,8);var N=String.fromCharCode(10);return links.join(N);})()", 10000);
+console.log(out);
+process.exit(0);

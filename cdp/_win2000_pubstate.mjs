@@ -1,0 +1,12 @@
+import { CDP, sleep } from './CDP.mjs';
+const [,, domain] = process.argv;
+const base = 'http://127.0.0.1:9224';
+const tabs = await (await fetch(base+'/json/list')).json();
+const tab = tabs.find(t => t.type==='page' && t.url.includes(domain));
+const ws = new WebSocket(tab.webSocketDebuggerUrl);
+await new Promise((res,rej)=>{ws.onopen=res;ws.onerror=rej;});
+const c = new CDP(ws);
+await c.send('Page.enable');
+const out = await c.evalT("(function(){var b=document.querySelector('#publish');if(!b)return 'NOBTN';var f=document.querySelector('form#post');var pending=typeof wp!=='undefined'&&wp.autosave?window.autosaveLocal:null;return JSON.stringify({dis:b.disabled,val:b.value,form:!!f,titleLen:(document.querySelector('#title')||{value:''}).value.length,contentLen:(document.querySelector('#content')||{value:''}).value.length,nonce:!!document.querySelector('#_wpnonce')});})()", 8000);
+console.log(out);
+process.exit(0);

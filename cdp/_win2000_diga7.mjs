@@ -1,0 +1,20 @@
+import { CDP, sleep } from './CDP.mjs';
+import fs from 'fs';
+const tabs = await (await fetch('http://127.0.0.1:9224/json/list')).json();
+const tab = tabs.find(t => (t.url || '').includes('digabusiness') && t.type === 'page');
+const ws = new WebSocket(tab.webSocketDebuggerUrl);
+await new Promise(r => ws.onopen = r);
+const cdp = new CDP(ws);
+await cdp.send('Page.enable');
+await cdp.eval(`update_categ_selection(377, 0, 0); 'ok'`);
+await sleep(1500);
+const cat = await cdp.eval(`(() => { const s = document.querySelector('select[name="CATEGORY_ID"]'); return s ? 'CAT=' + s.value + '/' + (s.selectedOptions[0]||{}).textContent : 'NOSELECT'; })()`);
+console.log(cat);
+// CAPTCHA 截图(页内找captcha img的rect后整页截图裁剪交给GD)
+const rect = await cdp.eval(`(() => { const img = document.querySelector('img[src*="captcha"], img[src*="CAPTCHA"], img[alt*="captcha" i]'); if (!img) return 'NOIMG'; const r = img.getBoundingClientRect(); img.scrollIntoView({block:'center'}); const r2 = img.getBoundingClientRect(); return JSON.stringify({x: Math.round(r2.x), y: Math.round(r2.y), w: Math.round(r2.width), h: Math.round(r2.height), src: (img.getAttribute('src')||'').slice(0,50)}); })()`);
+console.log('captcha rect:', rect);
+await sleep(800);
+const cap = await cdp.send('Page.captureScreenshot', { format: 'png' });
+fs.writeFileSync('D:/Github/seoadminC/storage/_win2000_diga_page.png', Buffer.from(cap.data, 'base64'));
+console.log('page shot saved');
+process.exit(0);
