@@ -3583,7 +3583,8 @@
   "374": "reg0000 0911: patch.com=IP级墙——前端表单全通(镜像注入让grecaptcha加载成功)但后端pep.patchapi.io对本机IP全403(nginx原生封锁页, curl带正常UA/Origin也403), 注册API调用链断; 弃",
   "375": "reg0000 0911: hackernoon=API后端网络墙——us-central1-hackernoon-app.cloudfunctions.net本机000(主站/app域200正常), auth2/login/email挂19s返回0字节=登录永远卡Loading; ★悬案告破: 历多班'编辑器tag数据源挂'同根因(tag候选API也在cloudfunctions); 恢复条件=网络层解封, 站方无责",
   "376": "reg0000 0911: blogdigy.com/signup=Incompatible Browser unknown Error(浏览器指纹拒绝, 9224真JS提交+jsession hidden字段齐也拒)——同引擎blogdon/blogkoo/amoblog(同2867B signup壳)大概率同墙, 收割前先探; 表单jsession+use_ssl hidden为curl败因",
-  "377": "reg0000 0911补: amoblog.com/signup表单渲染干净(无浏览器墙提示)但真提交静默回弹同blogdigy——blogdon/blogkoo/amoblog/blogdigy四站为同引擎'隐形浏览器墙'族, curl和9224真点击均被静默拒, 与ampblogs(cool-php-captcha可注册)非同族; 下班勿再盲试, 需先解浏览器指纹检测"
+  "377": "reg0000 0911补: amoblog.com/signup表单渲染干净(无浏览器墙提示)但真提交静默回弹同blogdigy——blogdon/blogkoo/amoblog/blogdigy四站为同引擎'隐形浏览器墙'族, curl和9224真点击均被静默拒, 与ampblogs(cool-php-captcha可注册)非同族; 下班勿再盲试, 需先解浏览器指纹检测",
+  "378": "reg0000 0911终补: suomiblog.com同blogdigy引擎墙(9224真点击+全字段齐仍静默回弹/signup)——至此隐形浏览器墙族确认5站=blogdigy/blogdon/blogkoo/amoblog/suomiblog(mpeblog待验); 8兄弟站指纹全录: ampblogs=cool-php-captcha可注册族(已收), suomiblog/mpeblog=jsession墙族, blogacep/actoblog/atualblog/activosblog/blogadvize=/signup空壳(0B, 表单在/register待探); 收割顺位: mpeblog表单待验+5空壳站/register探"
  },
  "login_channel": {
   "aitoolsmagazine.com": {
