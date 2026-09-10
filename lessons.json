@@ -3581,7 +3581,8 @@
   },
   "direct-directory.com": "win1800 0909: reCAPTCHA Enterprise报『此网站已超出免费配额』+全屏广告模态吞点击——站方配额死, 勿再攻(表单字段全标准Title/URL/Desc/Name/Email/CATEGORY select 3534项顶层2=Business/3=Computers and Internet/6=Home/10=Reference, 若站方续费配额可秒攻)",
   "374": "reg0000 0911: patch.com=IP级墙——前端表单全通(镜像注入让grecaptcha加载成功)但后端pep.patchapi.io对本机IP全403(nginx原生封锁页, curl带正常UA/Origin也403), 注册API调用链断; 弃",
-  "375": "reg0000 0911: hackernoon=API后端网络墙——us-central1-hackernoon-app.cloudfunctions.net本机000(主站/app域200正常), auth2/login/email挂19s返回0字节=登录永远卡Loading; ★悬案告破: 历多班'编辑器tag数据源挂'同根因(tag候选API也在cloudfunctions); 恢复条件=网络层解封, 站方无责"
+  "375": "reg0000 0911: hackernoon=API后端网络墙——us-central1-hackernoon-app.cloudfunctions.net本机000(主站/app域200正常), auth2/login/email挂19s返回0字节=登录永远卡Loading; ★悬案告破: 历多班'编辑器tag数据源挂'同根因(tag候选API也在cloudfunctions); 恢复条件=网络层解封, 站方无责",
+  "376": "reg0000 0911: blogdigy.com/signup=Incompatible Browser unknown Error(浏览器指纹拒绝, 9224真JS提交+jsession hidden字段齐也拒)——同引擎blogdon/blogkoo/amoblog(同2867B signup壳)大概率同墙, 收割前先探; 表单jsession+use_ssl hidden为curl败因"
  },
  "login_channel": {
   "aitoolsmagazine.com": {
@@ -3769,7 +3770,7 @@
   "★2026-08-30 用户指定铁律: 提交/注册后落地 PayPal/Stripe 链接=付费流程(无论页面标Free/Regular/Basic), 立即停止不再操作, 直接记 FROZEN-PAID_ONLY。免费标签是诱饵——判断标准看提交后跳转, 不看页面宣传。已实锤: 9sites.net($15.95)/postfreedirectory(套内Regular)/saascity(badge互换另计)",
   "★2026-09-08 用户指定铁律(雨露均沾): 推广文取稿只从本机 machine_task_assignments 分配组的站点轮换(C机=general组4站: smogcheck-nearme/generatorforhouse/zakaihu/spravs, ai组越权API已400硬拦), 按 sites 站序循环优先最久未发的站; 单站当日≤6篇且单站7天占比≤40%; 锚文本取 keyword_groups.seo_keywords 或自然变体禁裸域名; 每篇落库必带 keyword_group_id+target_url(不带=统计失明)。详见 AGENTS.md「发文目标站分配与雨露均沾」节"
  ],
- "updated": "2026-09-11 01:3x",
+ "updated": "2026-09-11 01:4x",
  "pitfalls": [
   "2026-08-30 win0000: 零POST首跑重跑模式在dynamite/rankmyai/viesearch三站复现——凡提交脚本首跑业务POST为空, 一律先原样重跑一次再诊断, 勿当场深挖(省时一半)",
   "2026-08-30 win0400: 按钮扫描eval勿设y上限(y<1300滤掉过y2718的真按钮)——vis判断只用width/height, 滚动定位交给scrollIntoView",
