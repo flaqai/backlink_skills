@@ -1,0 +1,15 @@
+import { CDP, sleep } from './CDP.mjs';
+import fs from 'fs';
+const t = await (await fetch('http://127.0.0.1:9224/json/new?' + encodeURIComponent('https://pressbooks.pub/leoxmnotes/wp-admin/edit.php?post_type=chapter'), { method: 'PUT' })).json();
+await fetch(`http://127.0.0.1:9224/json/activate/${t.id}`);
+const cdp = new CDP(new WebSocket(t.webSocketDebuggerUrl));
+await new Promise((res, rej) => { ws_on(res, rej); function ws_on(res, rej) { cdp.ws.addEventListener('open', res); cdp.ws.addEventListener('error', rej); setTimeout(() => rej(new Error('ws-timeout')), 10000); } });
+await cdp.send('Page.enable');
+await sleep(10000);
+const r = await cdp.eval(`(() => JSON.stringify([...document.querySelectorAll('a.row-title')].map(a => ({t: a.innerText.trim().slice(0,55), h: a.href})).slice(0,6)))()`);
+console.log('ROWS:', r);
+const shot = await cdp.send('Page.captureScreenshot', { format: 'png' });
+await fs.promises.writeFile('D:/Github/backlink_skills/storage/_w1200_pb_list.png', Buffer.from(shot.data, 'base64'));
+console.log('SHOT-OK');
+await fetch('http://127.0.0.1:9224/json/close/' + t.id);
+process.exit(0);

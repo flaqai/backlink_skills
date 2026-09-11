@@ -1,0 +1,11 @@
+import { CDP, sleep } from './CDP.mjs';
+const t = await (await fetch('http://127.0.0.1:9224/json/new?about:blank', { method: 'PUT' })).json();
+await fetch(`http://127.0.0.1:9224/json/activate/${t.id}`);
+const cdp = new CDP(new WebSocket(t.webSocketDebuggerUrl));
+await new Promise((res, rej) => { cdp.ws.addEventListener('open', res); cdp.ws.addEventListener('error', rej); });
+await cdp.send('Page.enable');
+await cdp.send('Page.navigate', { url: 'https://poordirectory.com/submit.php' });
+await sleep(9000);
+const r = await cdp.eval(`(() => JSON.stringify({url: location.href.slice(0,80), title: document.title.slice(0,40), hasForm: !!document.querySelector('input[name=TITLE]'), hasCat: !!document.querySelector('select[name=CATEGORY_ID]'), hasCap: !!document.querySelector('.g-recaptcha')}))()`);
+console.log('PD:', r);
+console.log('TABID:' + t.id);
