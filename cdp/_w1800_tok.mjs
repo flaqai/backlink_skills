@@ -1,0 +1,10 @@
+import { CDP } from './CDP.mjs';
+const [DOM] = process.argv.slice(2);
+const tabs = await (await fetch('http://127.0.0.1:9224/json/list')).json();
+const tab = tabs.find(t => (t.url || '').includes(DOM) && t.type === 'page');
+const ws = new WebSocket(tab.webSocketDebuggerUrl);
+await new Promise(r => ws.onopen = r);
+const cdp = new CDP(ws);
+const st = await cdp.eval(`(() => JSON.stringify({url:location.href.slice(0,80), formGone:!document.querySelector('form.dir-submit'), tok:[...document.querySelectorAll('textarea[name="g-recaptcha-response"]')].map(t=>t.value.length), checked:!!document.querySelector('.g-recaptcha-checkbox-checked')}))()`);
+console.log(st);
+ws.close();

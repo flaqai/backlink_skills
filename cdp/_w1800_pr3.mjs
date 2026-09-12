@@ -1,0 +1,22 @@
+import { CDP, sleep } from './CDP.mjs';
+import fs from 'fs';
+const tabs = await (await fetch('http://127.0.0.1:9224/json/list')).json();
+const tab = tabs.find(t => (t.url || '').includes('pressrelease') && t.type === 'page');
+if (!tab) { console.log('NOTAB'); process.exit(1); }
+await fetch('http://127.0.0.1:9224/json/activate/' + tab.id).catch(() => {});
+const ws = new WebSocket(tab.webSocketDebuggerUrl);
+await new Promise(r => ws.onopen = r);
+const cdp = new CDP(ws);
+await cdp.send('Page.enable');
+const cat = await cdp.eval(`(() => { const s=document.querySelector('select[name="press_release[pressReleaseCategory]"]'); if(!s) return 'NOSEL'; const o=[...s.options].find(o=>o.value && /business|home|consumer/i.test(o.text)); if(!o) return 'NOMATCH:'+JSON.stringify([...s.options].slice(0,8).map(o=>o.value+':'+o.text.trim())); s.value=o.value; s.dispatchEvent(new Event('change',{bubbles:true})); return 'SET '+o.text.trim(); })()`);
+console.log('CAT:', cat);
+const btn = await cdp.eval(`(() => { const f=document.querySelector('form[name=press_release]'); const b=[...f.querySelectorAll('button')].find(x=>/payment|continue/i.test(x.textContent||'')); if(!b) return 'NOBTN'; const dis=b.disabled?'DISABLED':'enabled'; b.scrollIntoView({block:'center'}); const rc=b.getBoundingClientRect(); return JSON.stringify({dis, x:Math.round(rc.x+rc.width/2), y:Math.round(rc.y+rc.height/2)}); })()`);
+console.log('BTN:', btn);
+const p = JSON.parse(btn);
+for (const ty of ['mouseMoved','mousePressed','mouseReleased']) await cdp.send('Input.dispatchMouseEvent', { type: ty, x: p.x, y: p.y, button: 'left', clickCount: 1 });
+console.log('CLICKED');
+await sleep(8000);
+const after = await cdp.eval(`(() => JSON.stringify({url:location.href.slice(0,130), txt:document.body.innerText.slice(0,400).replace(/\s+/g,' ')}))()`);
+console.log('AFTER:', after);
+await cdp.send('Page.captureScreenshot').then(r => { fs.writeFileSync('D:/Github/backlink_skills/cdp/_w1800_pr_shot3.png', Buffer.from(r.data, 'base64')); }).catch(() => {});
+ws.close();

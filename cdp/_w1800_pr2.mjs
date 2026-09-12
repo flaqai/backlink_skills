@@ -1,0 +1,27 @@
+import { CDP, sleep } from './CDP.mjs';
+import fs from 'fs';
+const tabs = await (await fetch('http://127.0.0.1:9224/json/list')).json();
+const tab = tabs.find(t => (t.url || '').includes('pressrelease') && t.type === 'page');
+if (!tab) { console.log('NOTAB'); process.exit(1); }
+await fetch('http://127.0.0.1:9224/json/activate/' + tab.id).catch(() => {});
+const ws = new WebSocket(tab.webSocketDebuggerUrl);
+await new Promise(r => ws.onopen = r);
+const cdp = new CDP(ws);
+await cdp.send('Page.enable');
+const loc = await cdp.eval(`(() => { const el=document.querySelector('input[name="press_release[contactLocation]"]'); el.scrollIntoView({block:'center'}); el.focus(); el.value=''; return 'ok'; })()`);
+await sleep(150); await cdp.send('Input.insertText', { text: 'Los Angeles, CA, United States' }); await sleep(150);
+const chk = await cdp.eval(`(() => { const f=document.querySelector('form[name=press_release]'); const c=f.querySelector('input[name="press_release[submitter_confirm]"], input[name="submitter_confirm"]'); if(!c) return 'NOCHK'; c.scrollIntoView({block:'center'}); if(!c.checked){ c.click(); } return 'checked='+c.checked; })()`);
+console.log('LOC+CONFIRM:', loc, chk);
+const inv = await cdp.eval(`(() => { const f=document.querySelector('form[name=press_release]'); const bad=[...f.querySelectorAll(':invalid')].map(e=>e.name||e.id).filter(Boolean); return JSON.stringify(bad.slice(0,6)); })()`);
+console.log('INVALID:', inv);
+const btn = await cdp.eval(`(() => { const f=document.querySelector('form[name=press_release]'); const b=f.querySelector('button[type=submit]'); b.scrollIntoView({block:'center'}); const rc=b.getBoundingClientRect(); return JSON.stringify({x:Math.round(rc.x+rc.width/2), y:Math.round(rc.y+rc.height/2)}); })()`);
+const p = JSON.parse(btn);
+await cdp.send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: p.x, y: p.y }); await sleep(200);
+await cdp.send('Input.dispatchMouseEvent', { type: 'mousePressed', x: p.x, y: p.y, button: 'left', clickCount: 1 });
+await cdp.send('Input.dispatchMouseEvent', { type: 'mouseReleased', x: p.x, y: p.y, button: 'left', clickCount: 1 });
+console.log('REAL-CLICKED');
+await sleep(8000);
+const after = await cdp.eval(`(() => { const t=document.body.innerText.slice(0,1500); const marks=[]; for(const p of ['thank','submitted','success','review','received','error','required','already','payment']){ const i=t.toLowerCase().indexOf(p); if(i>=0) marks.push(t.slice(Math.max(0,i-40),i+80).replace(/\s+/g,' ')); } return JSON.stringify({url:location.href.slice(0,110), marks:marks.slice(0,4)}); })()`);
+console.log('AFTER:', after);
+await cdp.send('Page.captureScreenshot').then(r => { fs.writeFileSync('D:/Github/backlink_skills/cdp/_w1800_pr_shot2.png', Buffer.from(r.data, 'base64')); }).catch(() => {});
+ws.close();

@@ -1,0 +1,12 @@
+import { CDP } from './CDP.mjs';
+import fs from 'fs';
+const [DOM, OUT] = process.argv.slice(2);
+const tabs = await (await fetch('http://127.0.0.1:9224/json/list')).json();
+const tab = tabs.find(t => (t.url || '').includes(DOM) && t.type === 'page');
+const ws = new WebSocket(tab.webSocketDebuggerUrl);
+await new Promise(r => ws.onopen = r);
+const cdp = new CDP(ws);
+const cap = await cdp.send('Page.captureScreenshot', { format: 'png' });
+fs.writeFileSync(OUT, Buffer.from(cap.data, 'base64'));
+console.log('SAVED', OUT);
+ws.close();
