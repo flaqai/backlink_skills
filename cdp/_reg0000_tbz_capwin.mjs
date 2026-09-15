@@ -1,0 +1,14 @@
+import { CDP, sleep } from './CDP.mjs';
+import { writeFileSync } from 'fs';
+const tab = [...(await (await fetch('http://127.0.0.1:9224/json/list')).json())].find(t2 => t2.type === 'page' && /tblogz\.com\/signup/.test(t2.url));
+await fetch('http://127.0.0.1:9224/json/activate/' + tab.id).catch(() => {});
+const ws = new WebSocket(tab.webSocketDebuggerUrl);
+await new Promise((res, rej) => { ws.onopen = res; ws.onerror = rej; });
+const c = new CDP(ws);
+await c.send('Page.enable'); await c.send('Runtime.enable');
+const out = await c.eval(`(function(){ const w=document.querySelector('#captcha_window,#imgs-window'); if(!w) return 'NO_WIN'; const cs=getComputedStyle(w); const b=w.getBoundingClientRect(); w.scrollIntoView({block:'center'}); return JSON.stringify({id:w.id, display:cs.display, vis:cs.visibility, rect:[Math.round(b.x),Math.round(b.y),Math.round(b.width),Math.round(b.height)], imgs:[...w.querySelectorAll('img,td,div[class*=img]')].length, html:w.innerHTML.length}); })()`);
+console.log('WIN:', out);
+await sleep(1500);
+const shot = await c.send('Page.captureScreenshot', { format: 'png' });
+writeFileSync('D:/Github/seoadminC/storage/_reg0000_tbz_cap2.png', Buffer.from(shot.data, 'base64'));
+process.exit(0);

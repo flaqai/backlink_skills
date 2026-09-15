@@ -1,0 +1,12 @@
+import { CDP, sleep } from './CDP.mjs';
+const t = await (await fetch('http://127.0.0.1:9224/json/new?https://tblogz.com/signup', { method: 'PUT' })).json();
+await fetch('http://127.0.0.1:9224/json/activate/' + t.id).catch(() => {});
+const ws = new WebSocket(t.webSocketDebuggerUrl);
+await new Promise((res, rej) => { ws.onopen = res; ws.onerror = rej; });
+const c = new CDP(ws);
+await c.send('Page.enable'); await c.send('Runtime.enable');
+await sleep(6000);
+const out = await c.eval(`JSON.stringify({url:location.href, inputs:[...document.querySelectorAll('input')].map(i=>({n:i.name||i.id,t:i.type,p:(i.placeholder||'').slice(0,20),vis:!!i.offsetParent})), btns:[...document.querySelectorAll('button,input[type=submit]')].filter(b=>b.offsetParent).map(b=>({t:(b.innerText||b.value||'').slice(0,25),n:b.name||''})), checkbox:!!document.querySelector('.captcha_checkbox,[id*=captcha_checkbox],[class*=checkbox]'), capwin:!!document.querySelector('#captcha_window,#imgs-window'), title:document.title.slice(0,50)})`);
+console.log(out);
+console.log('TABID=' + t.id);
+process.exit(0);

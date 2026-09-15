@@ -1,0 +1,18 @@
+import { CDP, sleep } from './CDP.mjs';
+import { writeFileSync } from 'fs';
+await fetch('http://127.0.0.1:9224/json/new?about:blank', { method: 'PUT' });
+await sleep(300);
+const list = await (await fetch('http://127.0.0.1:9224/json/list')).json();
+const tab = list.filter(t => t.type === 'page' && /about:blank/.test(t.url)).pop();
+const ws = new WebSocket(tab.webSocketDebuggerUrl);
+await new Promise((res, rej) => { ws.onopen = res; ws.onerror = rej; });
+const c = new CDP(ws);
+await c.send('Target.activateTarget', { targetId: tab.id });
+await c.send('Page.enable');
+await c.send('Page.navigate', { url: 'https://www.inube.com/register' });
+await sleep(7000);
+console.log('URL:', await c.evalT('location.href', 8000));
+console.log('FIELDS:', await c.evalT("JSON.stringify([...document.querySelectorAll('input,img,button')].filter(e=>e.offsetParent).map(function(e){return e.tagName+':'+(e.name||e.id||e.type||'')+(e.src?':img='+e.src.slice(0,70):'');}).slice(0,20))", 8000));
+const shot = await c.send('Page.captureScreenshot', {format:'png'}).catch(()=>null);
+if(shot) writeFileSync('D:/Github/seoadminC/storage/_reg0000/inube_open.png', Buffer.from(shot.data,'base64'));
+console.log('SHOT ok');

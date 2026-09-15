@@ -1,0 +1,12 @@
+import { CDP, sleep } from './CDP.mjs';
+import fs from 'fs';
+const log = (s) => fs.writeSync(1, s + '\n');
+let tab = [...(await (await fetch('http://127.0.0.1:9224/json/list')).json())].find(t => t.type === 'page' && t.url.includes('creatorlink'));
+const ws = new WebSocket(tab.webSocketDebuggerUrl);
+await new Promise((res, rej) => { ws.onopen = res; ws.onerror = rej; setTimeout(() => rej(new Error('ws超时')), 6000); });
+const c = new CDP(ws);
+await c.send('Page.enable');
+const js = "(() => { const out=[]; for (const e of document.querySelectorAll('button,a,[class*=btn]')) { const t=(e.innerText||'').trim(); if (t==='사용'||t==='닫기') { const r=e.getBoundingClientRect(); const cs=getComputedStyle(e); out.push([e.tagName,String(e.className).slice(0,30),'dis='+e.disabled,'op='+cs.opacity,'pe='+cs.pointerEvents,Math.round(r.x)+','+Math.round(r.y)+','+Math.round(r.width),t].join(' | ')); } } return out.join(' || '); })()";
+const info = await c.evalT(js, 8000);
+log('BTNS: ' + info);
+ws.close(); process.exit(0);

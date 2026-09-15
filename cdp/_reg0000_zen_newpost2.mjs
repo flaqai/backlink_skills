@@ -1,0 +1,10 @@
+import { CDP, sleep } from './CDP.mjs';
+const tab = [...(await (await fetch('http://127.0.0.1:9224/json/list')).json())].find(t => t.type === 'page' && t.url.includes('thezenweb'));
+await fetch('http://127.0.0.1:9224/json/activate/' + tab.id).catch(() => {});
+const ws = new WebSocket(tab.webSocketDebuggerUrl);
+await new Promise(r => ws.onopen = r);
+const c = new CDP(ws);
+await c.send('Page.enable'); await c.send('Runtime.enable');
+const links = await c.eval(`JSON.stringify([...document.querySelectorAll('a')].filter(a=>a.offsetParent).map(a=>({t:(a.innerText||'').replace(/\s+/g,' ').slice(0,30), h:(a.href||'').slice(0,70)})).filter(x=>/new|post|write/i.test(x.t+x.h)).slice(0,10))`);
+console.log('LINKS:', links);
+process.exit(0);

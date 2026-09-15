@@ -1,0 +1,14 @@
+import { CDP, sleep } from './CDP.mjs';
+import { writeFileSync } from 'fs';
+let tab = await (await fetch('http://127.0.0.1:9224/json/new?https://leo-xm-dr5pbzi9lsroraasln0qv.justblogged.com/small-print-jobs-tools', { method: 'PUT' })).json();
+await fetch('http://127.0.0.1:9224/json/activate/' + tab.id).catch(()=>{});
+const ws = new WebSocket(tab.webSocketDebuggerUrl);
+await new Promise((res, rej) => { ws.onopen = res; ws.onerror = rej; setTimeout(rej, 10000); });
+const c = new CDP(ws);
+await c.send('Page.enable');
+await sleep(9000);
+const st = await c.evalT(`(function(){ return JSON.stringify({url:location.href.slice(0,90), title:document.title.slice(0,60), h1:(document.querySelector('h1')||{}).innerText||'', bodyLen:(document.body.innerText||'').length}); })()`, 10000);
+console.log(st);
+const shot = await c.send('Page.captureScreenshot', {format:'png'});
+writeFileSync('D:/Github/seoadminC/storage/_reg0000/jb_verify.png', Buffer.from(shot.data,'base64'));
+process.exit(0);

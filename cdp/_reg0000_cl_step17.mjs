@@ -1,0 +1,25 @@
+import { CDP, sleep } from './CDP.mjs';
+import fs from 'fs';
+const log = (s) => fs.writeSync(1, s + '\n');
+let tab = [...(await (await fetch('http://127.0.0.1:9224/json/list')).json())].find(t => t.type === 'page' && t.url.includes('creatorlink'));
+const ws = new WebSocket(tab.webSocketDebuggerUrl);
+await new Promise((res, rej) => { ws.onopen = res; ws.onerror = rej; setTimeout(() => rej(new Error('ws超时')), 6000); });
+const c = new CDP(ws);
+await c.send('Target.activateTarget', { targetId: tab.id });
+await c.send('Page.enable');
+const sleepMs = (ms) => new Promise(r => setTimeout(r, ms));
+await sleepMs(3000);
+const js = "(() => { const b=document.querySelector('.block-useit'); return b ? b.className : 'NOBTN'; })()";
+log('CLASS BEFORE: ' + await c.evalT(js, 6000));
+// 移除disable后真实点击
+const rm = await c.evalT("(() => { const b=document.querySelector('.block-useit'); if(!b) return 'NOBTN'; b.classList.remove('disable'); const r=b.getBoundingClientRect(); return Math.round(r.x+r.width/2)+','+Math.round(r.y+r.height/2); })()", 6000);
+log('AFTER RM: ' + rm);
+const [x, y] = rm.split(',').map(Number);
+await c.send('Input.dispatchMouseEvent', { type: 'mouseMoved', x, y });
+await c.send('Input.dispatchMouseEvent', { type: 'mousePressed', x, y, button: 'left', clickCount: 1 });
+await c.send('Input.dispatchMouseEvent', { type: 'mouseReleased', x, y, button: 'left', clickCount: 1 });
+await sleepMs(4000);
+const shot = await c.send('Page.captureScreenshot', { format: 'png' });
+fs.writeFileSync('D:/Github/seoadminC/storage/_reg0000_cl_useit.png', Buffer.from(shot.data, 'base64'));
+log('SHOT DONE');
+ws.close(); process.exit(0);

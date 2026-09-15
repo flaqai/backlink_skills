@@ -1,0 +1,13 @@
+import { CDP, sleep } from './CDP.mjs';
+import fs from 'fs';
+const log = (s) => fs.writeSync(1, s + '\n');
+let tab = [...(await (await fetch('http://127.0.0.1:9224/json/list')).json())].find(t => t.type === 'page' && t.url.includes('youslade'));
+const ws = new WebSocket(tab.webSocketDebuggerUrl);
+await new Promise((res, rej) => { ws.onopen = res; ws.onerror = rej; setTimeout(() => rej(new Error('ws超时')), 8000); });
+const c = new CDP(ws);
+await c.send('Page.enable');
+const text = "I keep coming back to the same small pleasure: watching the street wake up. Around seven the bakery fan kicks on, the first bus sighs at the corner, and the man with the checkered cap walks his dog past the launderette like he is inspecting it. None of it is remarkable, which is exactly why it works. On slow mornings I make tea, stand by the window, and let the street do its comedy routine. The dog always barks at the same lamppost. The lamppost, to its credit, has never once reacted. Find your window. Find your seven a.m. Everything else can wait ten minutes.";
+const js = "fetch('/requests.php?f=posts', { method: 'POST', headers: {'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8','X-Requested-With':'XMLHttpRequest'}, body: new URLSearchParams({ post: " + JSON.stringify(text) + " }), credentials: 'include' }).then(r => r.text().then(t => ({ status: r.status, body: t.slice(0, 300) }))).then(x => JSON.stringify(x)).catch(e => 'ERR:' + e.message)";
+const r = await c.evalT(js, 20000);
+log('API RESP: ' + r);
+ws.close(); process.exit(0);

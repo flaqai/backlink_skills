@@ -1,0 +1,18 @@
+import { CDP, sleep } from './CDP.mjs';
+import fs from 'fs';
+const log = (s) => fs.writeSync(1, s + '\n');
+const nt = await (await fetch('http://127.0.0.1:9224/json/new?https://youslade.com/home', { method: 'PUT' })).json();
+const ws = new WebSocket(nt.webSocketDebuggerUrl);
+await new Promise((res, rej) => { ws.onopen = res; ws.onerror = rej; setTimeout(() => rej(new Error('ws超时')), 8000); });
+const c = new CDP(ws);
+await c.send('Target.activateTarget', { targetId: nt.id });
+await c.send('Page.enable');
+await sleep(8000);
+const cur = await c.evalT('location.href', 6000);
+log('URL: ' + cur);
+const js = "(() => { const out=[]; for (const e of document.querySelectorAll('textarea,input[type=text],button')) { const r=e.getBoundingClientRect(); if(r.width>0) out.push(e.tagName+' id='+(e.id||'')+' name='+(e.name||'')+' cls='+String(e.className).slice(0,30)+' ph='+(e.placeholder||'').slice(0,25)); } return (out.slice(0,18).join(' || ')||'EMPTY')+' ### '+document.body.innerText.slice(0,150); })()";
+log(await c.evalT(js, 9000));
+const shot = await c.send('Page.captureScreenshot', { format: 'png' });
+fs.writeFileSync('D:/Github/seoadminC/storage/_reg0000_ys_home.png', Buffer.from(shot.data, 'base64'));
+log('SHOT DONE');
+ws.close(); process.exit(0);

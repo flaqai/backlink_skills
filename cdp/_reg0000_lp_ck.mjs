@@ -1,0 +1,11 @@
+import { CDP, sleep } from './CDP.mjs';
+import fs from 'fs';
+const list = await (await fetch('http://127.0.0.1:9224/json/list')).json();
+const tab = list.find(t => t.type === 'page' && /letterpad/.test(t.url));
+const ws = new WebSocket(tab.webSocketDebuggerUrl);
+await new Promise((res, rej) => { ws.onopen = res; ws.onerror = rej; setTimeout(rej, 8000); });
+const c = new CDP(ws);
+const r = await c.send('Storage.getCookies', {});
+const lines = r.cookies.map(k => [k.domain, k.path, k.secure ? 'TRUE' : 'FALSE', k.name, k.value].join('\t'));
+fs.writeFileSync('D:/Github/seoadminC/storage/_reg0000/lp_browser.jar', lines.join('\n'));
+console.log('cookies:', r.cookies.map(k => k.name + '(' + k.value.length + ')').join(', '));

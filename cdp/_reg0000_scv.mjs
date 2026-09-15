@@ -1,0 +1,12 @@
+import { CDP, sleep } from './CDP.mjs';
+import { writeFileSync } from 'fs';
+let tab = await (await fetch('http://127.0.0.1:9224/json/new?https://www.scoop.it/topic/leo-s-software-notebook', { method: 'PUT' })).json();
+await fetch('http://127.0.0.1:9224/json/activate/' + tab.id).catch(()=>{});
+const ws = new WebSocket(tab.webSocketDebuggerUrl);
+await new Promise((res, rej) => { ws.onopen = res; ws.onerror = rej; setTimeout(rej, 10000); });
+const c = new CDP(ws);
+await c.send('Page.enable');
+await sleep(10000);
+const st = await c.evalT(`(function(){ const b=(document.body.innerText||''); return JSON.stringify({title:document.title.slice(0,50), hasInsight: b.includes('editing, not collecting'), len:b.length}); })()`, 10000);
+console.log(st);
+process.exit(0);

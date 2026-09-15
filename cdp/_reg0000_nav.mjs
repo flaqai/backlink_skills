@@ -1,0 +1,12 @@
+import { CDP, sleep } from './CDP.mjs';
+const url = process.argv[2];
+const t = await (await fetch('http://127.0.0.1:9224/json/new?' + url, { method: 'PUT' })).json();
+await fetch('http://127.0.0.1:9224/json/activate/' + t.id).catch(() => {});
+const ws = new WebSocket(t.webSocketDebuggerUrl);
+await new Promise(r => ws.onopen = r);
+const c = new CDP(ws);
+await c.send('Page.enable');
+await sleep(6000);
+console.log(await c.eval(`JSON.stringify({url:location.href, head:document.body.innerText.replace(/\s+/g,' ').slice(0,150)})`));
+console.log('TABID=' + t.id);
+process.exit(0);
