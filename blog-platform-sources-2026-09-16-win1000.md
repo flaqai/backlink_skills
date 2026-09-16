@@ -18,3 +18,10 @@
 3. **noblogo.org** — WF开放注册SIGNUP_PAGE, ARCH未消费(⚠blog.rollenspiel.monster与blog.dtth.ch在手工登录队列/队列内避让不自动攻)
 4. **buzzing.im** — misskey email=True未消费, eter9.com/abyss.cafe同批备选
 5. **i11l.blog** — 0915 Top1维持(200活, 平台型, 注册入口待9224深探)
+
+## 补笔(11:2x): Top5注册表单侦察(夜班弹药)
+- **benert.pl/register**: Laravel表单(s _token CSRF + name + username + email + password + password_confirmation), 无captcha——curl两步即注(GET拿token→POST), 最干净
+- **rant.li**: alias + pass + email 三字段, 无captcha——直接POST
+- noblogo.org/register: 2444B JS壳, 字段需9224
+- buzzing.im/register: 20KB带captcha(misskey), 9224线
+- i11l.blog: JS应用壳无原生表单, 9224深探
