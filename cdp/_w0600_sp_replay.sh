@@ -1,15 +1,14 @@
 #!/bin/bash
 # win0600 sites-plus复放: _w0600_sp_replay.sh <url> <title> <desc> <email> [cat]
-# VPN代理优先、不通自动直连降级（注册发布分流铁律 2026-09-15）
-PXG="-x http://127.0.0.1:5780"; (exec 3<>/dev/tcp/127.0.0.1/5780) 2>/dev/null || PXG=""
+# 直连优先、失败代理兜底=出口IP总政策 2026-09-16（curl-df: 直连失败自动 -x 127.0.0.1:5780 重试）
 
 set -e
 URL="$1"; TITLE="$2"; DESC="$3"; EMAIL="$4"; CAT="${5:-190}"
 W=/d/Github/backlink_skills/cdp/_w0600_tmp
 rm -f $W/sp_jar2.txt
-curl $PXG -s -m 15 -c $W/sp_jar2.txt -b $W/sp_jar2.txt "https://www.sites-plus.com/submit?c=$CAT" -o $W/spA.html
+curl-df -s -m 15 -c $W/sp_jar2.txt -b $W/sp_jar2.txt "https://www.sites-plus.com/submit?c=$CAT" -o $W/spA.html
 # step2
-curl $PXG -s -m 15 -c $W/sp_jar2.txt -b $W/sp_jar2.txt -d "formSubmitted=2&LINK_TYPE=9&choicemade=Go+To+Step+Three" "https://www.sites-plus.com/submit?c=$CAT" -o $W/spB.html
+curl-df -s -m 15 -c $W/sp_jar2.txt -b $W/sp_jar2.txt -d "formSubmitted=2&LINK_TYPE=9&choicemade=Go+To+Step+Three" "https://www.sites-plus.com/submit?c=$CAT" -o $W/spB.html
 # step3 终提交
 python - "$URL" "$TITLE" "$DESC" "$EMAIL" "$CAT" <<'PYEOF'
 import re, sys, subprocess

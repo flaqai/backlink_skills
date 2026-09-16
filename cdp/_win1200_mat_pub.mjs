@@ -1,10 +1,13 @@
 // win1200 mataroa发文: check-engine-light-smog-check → leoxm.mataroa.blog (锚链smogcheck-nearme.com)
 // Django表单: GET /new/post/ 取csrftoken, 带jar会话POST
-// VPN代理优先、不通自动直连降级（注册发布分流铁律 2026-09-15）
-import { ProxyAgent as _PxAg, setGlobalDispatcher as _PxSet } from 'undici';
-import { connect as _PxC } from 'node:net';
-const _pxUp = await new Promise(r => { const s = _PxC(5780, '127.0.0.1'); s.once('connect', () => { s.destroy(); r(true); }); s.once('error', () => r(false)); });
-if (_pxUp) _PxSet(new _PxAg('http://127.0.0.1:5780'));
+// 直连优先、失败代理兜底（出口IP总政策 2026-09-16 curl-df口径）
+import { ProxyAgent as _PxAg, fetch as _PxF } from 'undici';
+const _pxAg = new _PxAg('http://127.0.0.1:5780');
+const _dfF = globalThis.fetch;
+globalThis.fetch = (..._dfA) => _dfF(..._dfA).catch(_dfE => {
+  if (_dfE instanceof TypeError && /fetch failed/i.test(String(_dfE.message))) return _PxF(_dfA[0], { ...(_dfA[1] || {}), dispatcher: _pxAg });
+  throw _dfE;
+});
 
 import { readFileSync } from 'fs';
 const jar = JSON.parse(readFileSync('D:/Github/backlink_skills/cookies/default/mataroa.blog.json', 'utf8'));

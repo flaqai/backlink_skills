@@ -1,12 +1,11 @@
 #!/bin/bash
 # win0600 101bookmarks PhaseA: 取表单+验证码图(4x放大)
-# VPN代理优先、不通自动直连降级（注册发布分流铁律 2026-09-15）
-PXG="-x http://127.0.0.1:5780"; (exec 3<>/dev/tcp/127.0.0.1/5780) 2>/dev/null || PXG=""
+# 直连优先、失败代理兜底=出口IP总政策 2026-09-16（curl-df: 直连失败自动 -x 127.0.0.1:5780 重试）
 
 W=/d/Github/backlink_skills/cdp/_w0600_tmp
 PW=D:/Github/backlink_skills/cdp/_w0600_tmp
 rm -f $W/b101_jar.txt
-curl $PXG -s -m 20 -c $W/b101_jar.txt -b $W/b101_jar.txt "http://www.101bookmarks.com/submit.php?c=4" -o $W/b101_form.html
+curl-df -s -m 20 -c $W/b101_jar.txt -b $W/b101_jar.txt "http://www.101bookmarks.com/submit.php?c=4" -o $W/b101_form.html
 python - <<'PYEOF'
 import re, subprocess
 W='D:/Github/backlink_skills/cdp/_w0600_tmp'

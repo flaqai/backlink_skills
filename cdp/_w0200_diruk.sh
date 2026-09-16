@@ -1,11 +1,10 @@
 #!/bin/bash
 # win0200 dir.uk.com WSN suggest.php 复放: $1=task $2=cat $3=url $4=title $5=desc $6=email
-# VPN代理优先、不通自动直连降级（注册发布分流铁律 2026-09-15）
-PXG="-x http://127.0.0.1:5780"; (exec 3<>/dev/tcp/127.0.0.1/5780) 2>/dev/null || PXG=""
+# 直连优先、失败代理兜底=出口IP总政策 2026-09-16（curl-df: 直连失败自动 -x 127.0.0.1:5780 重试）
 
 T=$1; CD=/d/Github/backlink_skills/cdp; JAR=$CD/_w0200_diruk_$T.jar
 UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/153.0.0.0"
-curl $PXG -s -m 20 -L -c $JAR -b $JAR -A "$UA" "https://www.dir.uk.com/suggest.php?action=addlink" -o $CD/_w0200_diruk_${T}_form.html
+curl-df -s -m 20 -L -c $JAR -b $JAR -A "$UA" "https://www.dir.uk.com/suggest.php?action=addlink" -o $CD/_w0200_diruk_${T}_form.html
 node -e "
 const fs=require('fs');
 const h=fs.readFileSync('D:/Github/backlink_skills/cdp/_w0200_diruk_${T}_form.html','utf8');
@@ -19,7 +18,7 @@ read ANS GID < $CD/_w0200_diruk_${T}_ans.txt
 echo "t$T challenge=$ANS chid=$GID cat=$2"
 [ -z "$ANS" ] && exit 1
 PASS="Xx@Diruk26!Xm"
-curl $PXG -s -m 25 -b $JAR -c $JAR -A "$UA" -H "Referer: https://www.dir.uk.com/suggest.php?action=addlink" \
+curl-df -s -m 25 -b $JAR -c $JAR -A "$UA" -H "Referer: https://www.dir.uk.com/suggest.php?action=addlink" \
   -F "catid=$2" -F "type=regular" -F "url=$3" -F "title=$4" -F "description=$5" \
   -F "email=$6" -F "name=leoxm" -F "password=$PASS" \
   -F "challengeanswer=$ANS" -F "challengeid=$GID" \

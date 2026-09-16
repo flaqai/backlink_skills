@@ -1,6 +1,6 @@
 <?php
 
-// VPN代理优先、不通自动直连降级（注册发布分流铁律 2026-09-15）
+// 直连优先、失败代理兜底（出口IP总政策 2026-09-16 curl-df口径）
 function _df_px() { $f = @fsockopen('127.0.0.1', 5780, $e, $c, 2); if ($f) { fclose($f); return 'http://127.0.0.1:5780'; } return ''; }
 
 // reg0000 0910 固化: KEY-Captcha 拼图验证码通用破解器 (ua.gz/abcdwebsites 系站点通用)
@@ -27,6 +27,15 @@ function http($url, $post = null, $ua = null, $jar = null) {
     $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     $em = curl_errno($ch) . ':' . curl_error($ch);
     curl_close($ch);
+    if (($r === false || $code === 0) && _df_px()) {
+        $opts[CURLOPT_PROXY] = _df_px();
+        $ch = curl_init($url);
+        curl_setopt_array($ch, $opts);
+        $r = curl_exec($ch);
+        $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $em = curl_errno($ch) . ':' . curl_error($ch);
+        curl_close($ch);
+    }
     return [$code, $r, $em];
 }
 

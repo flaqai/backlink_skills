@@ -1,15 +1,14 @@
 #!/bin/bash
 # win0600 247webdirectory首投: GET取token+算术码 → POST /submit/save
 # 用法: _w0600_247.sh <site_url> <title> <desc> <email> [categ_cd]
-# VPN代理优先、不通自动直连降级（注册发布分流铁律 2026-09-15）
-PXG="-x http://127.0.0.1:5780"; (exec 3<>/dev/tcp/127.0.0.1/5780) 2>/dev/null || PXG=""
+# 直连优先、失败代理兜底=出口IP总政策 2026-09-16（curl-df: 直连失败自动 -x 127.0.0.1:5780 重试）
 
 set -e
 URL="$1"; TITLE="$2"; DESC="$3"; EMAIL="$4"; CAT="${5:-178}"
 W=/d/Github/backlink_skills/cdp/_w0600_tmp
 PW=D:/Github/backlink_skills/cdp/_w0600_tmp
 mkdir -p $W
-curl $PXG -s -m 20 -c $W/jar.txt -b $W/jar.txt -L "https://www.247webdirectory.com/submit" -o $W/page.html
+curl-df -s -m 20 -c $W/jar.txt -b $W/jar.txt -L "https://www.247webdirectory.com/submit" -o $W/page.html
 python - "$URL" "$TITLE" "$DESC" "$EMAIL" "$CAT" <<'PYEOF'
 import re, sys, subprocess
 url, title, desc, email, cat = sys.argv[1:6]

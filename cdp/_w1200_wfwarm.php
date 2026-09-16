@@ -1,19 +1,27 @@
 <?php
 
-// VPN代理优先、不通自动直连降级（注册发布分流铁律 2026-09-15）
+// 直连优先、失败代理兜底（出口IP总政策 2026-09-16 curl-df口径）
 function _df_px() { $f = @fsockopen('127.0.0.1', 5780, $e, $c, 2); if ($f) { fclose($f); return 'http://127.0.0.1:5780'; } return ''; }
 
 // win1200: writefreely两站(dranik/linuxat) token登录→collection→养号文→API落库
 function api($url, $method, $body, $token = null) {
     $hdr = ['Content-Type: application/json'];
     if ($token) $hdr[] = "Authorization: Bearer $token";
-    $ch = curl_init($url);
-    curl_setopt_array($ch, [
-    CURLOPT_PROXY => _df_px(),CURLOPT_RETURNTRANSFER => true, CURLOPT_CUSTOMREQUEST => $method,
+    $opts = [CURLOPT_RETURNTRANSFER => true, CURLOPT_CUSTOMREQUEST => $method,
         CURLOPT_HTTPHEADER => $hdr, CURLOPT_POSTFIELDS => $body ? json_encode($body, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) : null,
-        CURLOPT_TIMEOUT => 30, CURLOPT_SSL_VERIFYPEER => false]);
+        CURLOPT_TIMEOUT => 30, CURLOPT_SSL_VERIFYPEER => false];
+    $ch = curl_init($url);
+    curl_setopt_array($ch, $opts);
     $out = curl_exec($ch);
     $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    if (($out === false || $code === 0) && _df_px()) {
+        curl_close($ch);
+        $opts[CURLOPT_PROXY] = _df_px();
+        $ch = curl_init($url);
+        curl_setopt_array($ch, $opts);
+        $out = curl_exec($ch);
+        $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    }
     curl_close($ch);
     return [$code, json_decode($out, true)];
 }
@@ -67,7 +75,7 @@ foreach ($plan as $p) {
     file_put_contents($f, json_encode($payload, JSON_UNESCAPED_UNICODE));
     $ch = curl_init("http://127.0.0.1/api/seo1/blog-writer/posts");
     curl_setopt_array($ch, [
-    CURLOPT_PROXY => _df_px(),CURLOPT_RETURNTRANSFER => true, CURLOPT_POST => true, CURLOPT_HTTPHEADER => ['Content-Type: application/json'], CURLOPT_POSTFIELDS => file_get_contents($f), CURLOPT_TIMEOUT => 20]);
+    CURLOPT_RETURNTRANSFER => true, CURLOPT_POST => true, CURLOPT_HTTPHEADER => ['Content-Type: application/json'], CURLOPT_POSTFIELDS => file_get_contents($f), CURLOPT_TIMEOUT => 20]);
     $r4 = json_decode(curl_exec($ch), true);
     $code4 = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
@@ -76,7 +84,7 @@ foreach ($plan as $p) {
     if (!$newId) continue;
     $ch = curl_init("http://127.0.0.1/api/seo1/blog-writer/posts/{$newId}/mark-published");
     curl_setopt_array($ch, [
-    CURLOPT_PROXY => _df_px(),CURLOPT_RETURNTRANSFER => true, CURLOPT_POST => true, CURLOPT_HTTPHEADER => ['Content-Type: application/json'], CURLOPT_POSTFIELDS => json_encode(['published_url' => $url]), CURLOPT_TIMEOUT => 20]);
+    CURLOPT_RETURNTRANSFER => true, CURLOPT_POST => true, CURLOPT_HTTPHEADER => ['Content-Type: application/json'], CURLOPT_POSTFIELDS => json_encode(['published_url' => $url]), CURLOPT_TIMEOUT => 20]);
     $r5 = json_decode(curl_exec($ch), true);
     echo "  MARK_PUB code=" . curl_getinfo($ch, CURLINFO_HTTP_CODE) . "\n";
     curl_close($ch);

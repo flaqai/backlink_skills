@@ -1,6 +1,6 @@
 <?php
 
-// VPN代理优先、不通自动直连降级（注册发布分流铁律 2026-09-15）
+// 直连优先、失败代理兜底（出口IP总政策 2026-09-16 curl-df口径）
 function _df_px() { $f = @fsockopen('127.0.0.1', 5780, $e, $c, 2); if ($f) { fclose($f); return 'http://127.0.0.1:5780'; } return ''; }
 
 // win2000: bedirectory.com t9 spravs curl直投 (phpLD克隆, captcha侦测跳过)
@@ -23,10 +23,12 @@ $lt='';
 if(preg_match('/name="LINK_TYPE"[^>]*value="([^"]*)"/',$html,$lm))$lt=$lm[1];
 echo "CAT=$cat LT=$lt\n";
 $post=['LINK_TYPE'=>$lt,'TITLE'=>$title,'URL'=>"https://{$site}",'DESCRIPTION'=>$desc,'OWNER_NAME'=>'Leo Xm','OWNER_EMAIL'=>$email,'CATEGORY_ID'=>$cat,'AGREERULES'=>'1','submit'=>'Submit','META_KEYWORDS'=>'','META_DESCRIPTION'=>substr($desc,0,200)];
+$opts=[CURLOPT_POST=>true,CURLOPT_POSTFIELDS=>http_build_query($post),CURLOPT_RETURNTRANSFER=>true,CURLOPT_FOLLOWLOCATION=>true,CURLOPT_TIMEOUT=>25,CURLOPT_SSL_VERIFYPEER=>false,CURLOPT_USERAGENT=>'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/126.0.0.0'];
 $ch=curl_init($url);
-curl_setopt_array($ch, [
-    CURLOPT_PROXY => _df_px(),CURLOPT_POST=>true,CURLOPT_POSTFIELDS=>http_build_query($post),CURLOPT_RETURNTRANSFER=>true,CURLOPT_FOLLOWLOCATION=>true,CURLOPT_TIMEOUT=>25,CURLOPT_SSL_VERIFYPEER=>false,CURLOPT_USERAGENT=>'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/126.0.0.0']);
-$res=curl_exec($ch);$code=curl_getinfo($ch,CURLINFO_HTTP_CODE);curl_close($ch);
+curl_setopt_array($ch, $opts);
+$res=curl_exec($ch);$code=curl_getinfo($ch,CURLINFO_HTTP_CODE);
+if(($res===false||$code===0)&&_df_px()){curl_close($ch);$opts[CURLOPT_PROXY]=_df_px();$ch=curl_init($url);curl_setopt_array($ch,$opts);$res=curl_exec($ch);$code=curl_getinfo($ch,CURLINFO_HTTP_CODE);}
+curl_close($ch);
 $txt=strip_tags($res);$txt=preg_replace('/\s+/',' ',$txt);
 $bad=[];foreach(['invalid code','error','required','already exist','wrong'] as $b){if(stripos($txt,$b)!==false)$bad[]=$b;}
 $good=[];foreach(['awaiting approval','thank','submitted','review','accepted','link has been'] as $g){if(stripos($txt,$g)!==false)$good[]=$g;}
