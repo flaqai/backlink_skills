@@ -25,3 +25,8 @@
 3. **benert.pl**(博客) — 见博客档Top1
 4. **poordirectory.com** — FAIL复判98KB大表单活, t9=spravs格攻坚管线在案
 5. **worthtotry.com** — 9224复判404真伪, 真则magic-link两步式(win0800流程在案)
+
+## 补笔(11:3x): directoryfire 9224实探
+- 表单=两步向导: curl层只有hidden CATEGORY_ID=0+formSubmitted(无字段壳), 真表单JS渲染
+- Step One=Choose a Category(多选widget Choices型, 真select名=ADD_CATEGORY_ID[] 375选项 vis=false), 类目223=Personal Finance已定位; 点Go To Step Two后出真字段(本班未及攻完)
+- **下窗续攻入口**: _w1000_dfire_go.mjs fill→widget选223→Go To Step Two→重扫字段填→submit; zak(t7)/spravs(t9)两格确认空置(kg106/kg6无行)
