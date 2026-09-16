@@ -31,3 +31,4 @@
 - Step One=Choose a Category(多选widget Choices型, 真select名=ADD_CATEGORY_ID[] 375选项 vis=false), 类目223=Personal Finance已定位; 点Go To Step Two后出真字段(本班未及攻完)
 - **下窗续攻入口**: _w1000_dfire_go.mjs fill→widget选223→Go To Step Two→重扫字段填→submit; zak(t7)/spravs(t9)两格确认空置(kg106/kg6无行)
 - **续攻实探(11:3x)**: 向导推进法已通——Step Two真URL=/df/submit?c=<类目>(点Go To Step Two后跳转), 直改URL **directoryfire.com/df/submit?c=223** 可直接落位类目页! 字段在该页AJAX延迟渲染(本班止于c=223落位, 字段未出); 下窗: 9224开/df/submit?c=223→等3s→扫TITLE/URL/DESCRIPTION/OWNER_NAME/OWNER_EMAIL填→submit(无码)——zak(t7)/spravs(t9)两格空置
+- **9224复判反转(11:4x)**: worthtotry.com/submit(ALIVE, 6表单10输入) + businessconnect.directory/submit(ALIVE, 1表单35输入大表单)——两站curl 404均=UA bot墙非真死, **恢复可攻**, 0915「curl层404」口径对这两站作废
