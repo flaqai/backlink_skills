@@ -20,8 +20,8 @@
 - angeldirectory... angeli.org HTTP_500半死; relateddirectory/relevantdirectories/relevantdirectory.biz 死
 
 ## 首攻顺序 Top5 (下窗可执行)
-1. **directoryfire.com/submit.php** — nocap直投, curl即投, 首选
-2. **gmawebdirectory.com/submit.php** — 24h内FAIL复判: 200+FORM活, 0831型phpLD免码待遇(win0800 FAIL行208663, 重试可翻)
+1. **gmawebdirectory.com** — ★本班已破: t8 gfh 提交成功 LOG#208713(win0800 FAIL翻案)——★配方根因=提交按钮字段 submit=Continue 非 continue=(缺它phpLD静默丢弃POST); LINK_TYPE=normal字符串; captcha每GET重生成hash→取图恰一次读码单次POST; 引擎_w1000_gma_vis.py在档, **同族canadawebdir等canadaweb/0831族可复放**
+2. **directoryfire.com/submit.php** — nocap直投, curl即投
 3. **benert.pl**(博客) — 见博客档Top1
-4. **poordirectory.com** — FAIL复判98KB大表单活, t9=spravs格攻坚管线在案(_w1000时代csubmit管线全通仅码拒)
+4. **poordirectory.com** — FAIL复判98KB大表单活, t9=spravs格攻坚管线在案
 5. **worthtotry.com** — 9224复判404真伪, 真则magic-link两步式(win0800流程在案)
