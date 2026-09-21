@@ -1,0 +1,4 @@
+interface:
+  display_name: "博客写作编辑核心参考"
+  short_description: "提供有证据 SEO 博客的编辑判断框架"
+  default_prompt: "使用 $blog-writer-merged 获取有证据 SEO 博客的编辑标准参考。"

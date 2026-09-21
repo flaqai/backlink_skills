@@ -2,11 +2,20 @@
 
 ![Backlink Skills：Codex 驱动的 SEO 写作、目录提交与外链渠道管理](assets/backlink-skills-hero.png)
 
+[![GitHub Stars](https://img.shields.io/github/stars/flaqai/backlink_skills?style=for-the-badge&logo=github&label=Stars&color=2563eb)](https://github.com/flaqai/backlink_skills/stargazers)
+[![GitHub Forks](https://img.shields.io/github/forks/flaqai/backlink_skills?style=for-the-badge&logo=github&label=Forks&color=0891b2)](https://github.com/flaqai/backlink_skills/forks)
+[![License](https://img.shields.io/github/license/flaqai/backlink_skills?style=for-the-badge&color=7c3aed)](LICENSE)
+[![Last Commit](https://img.shields.io/github/last-commit/flaqai/backlink_skills?style=for-the-badge&color=475569)](https://github.com/flaqai/backlink_skills/commits/main)
+
 > 这是 Flaq AI 团队在实际产品推广过程中整理并持续维护的一套开源工作流，包含外链渠道清单、两种产品目录提交 Skill、通用 SEO 写作 Skill，以及面向 LinkedIn、Medium 和微信公众号的定制写作 Skill。
 
 这个项目不是“一键群发外链”工具，也不承诺收录、Dofollow、流量或排名。我们希望分享的是一套更可复用的做法：让 Codex 先检查渠道，再按授权执行，遇到验证码时交给用户，提交后保留证据；需要内容时，再根据发布平台生成适合当地读者和规则的文章，而不是把同一篇 SEO 文案复制到所有网站。
 
 **语言：** [简体中文（主文档）](README.md) · [English](README_en.md) · [繁體中文](README_tw.md) · [日本語](README_ja.md) · [한국어](README_ko.md) · [ไทย](README_th.md) · [Tiếng Việt](README_vi.md) · [Bahasa Indonesia](README_id.md) · [Español](README_es.md) · [Français](README_fr.md) · [Deutsch](README_de.md) · [Italiano](README_it.md) · [Português](README_pt.md) · [Русский](README_ru.md) · [العربية](README_ar.md) · [हिन्दी](README_hi.md) · [Türkçe](README_tr.md) · [Nederlands](README_nl.md) · [Polski](README_pl.md)
+
+## 项目热度与 Star 增长
+
+[![flaqai/backlink_skills 的 GitHub Star 近期增长趋势](assets/github-stars-growth.svg)](https://github.com/flaqai/backlink_skills/stargazers)
 
 ## 项目里有什么
 
@@ -171,6 +180,7 @@ CAPTCHA、Turnstile、2FA、Passkey、邮箱/手机验证等必须由网站原�
 ├── README_en.md                      # English
 ├── README_*.md                       # 其他语言基础说明
 ├── Free-backlink-list.md             # 免费外链候选清单（Markdown）
+├── assets/                           # README 主视觉与 Star 趋势图
 ├── submit-product-directories-v1-batch/
 │   ├── SKILL.md
 │   ├── agents/openai.yaml

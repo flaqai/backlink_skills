@@ -1,0 +1,5 @@
+[
+  {"file": "lead.png", "coverage_zone": "LEAD", "alt": "文章开头的工作流示意图", "caption": "开篇语境图"},
+  {"file": "middle.png", "coverage_zone": "MIDDLE", "alt": "正文步骤的核验示意图", "caption": "工作流图"},
+  {"file": "closing.png", "coverage_zone": "CLOSING", "alt": "结尾人工核验的示意图", "caption": "结尾核验图"}
+]

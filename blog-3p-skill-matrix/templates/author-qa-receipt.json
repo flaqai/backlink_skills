@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "article_id": "A1",
+  "quality_mode": "WQ_SHARED_CONTEXT",
+  "result": "AUTHOR_QA_READY",
+  "protocol": "CANDIDATE_LOCK_ADVERSARIAL_SELF_QA_TARGETED_REPAIR_FINAL_BIND",
+  "candidate_canonical_sha256": "REPLACE_BEFORE_FINAL_BIND",
+  "final_artifact_hashes": {
+    "canonical_sha256": "REPLACE_AFTER_FINAL_BIND",
+    "evidence_pack_sha256": "REPLACE_AFTER_FINAL_BIND",
+    "metadata_sha256": "REPLACE_AFTER_FINAL_BIND",
+    "visual_manifest_sha256": "REPLACE_AFTER_FINAL_BIND",
+    "visual_payload_sha256": "REPLACE_AFTER_FINAL_BIND",
+    "visual_payload_markdown_sha256": "REPLACE_AFTER_FINAL_BIND",
+    "article_package_sha256": "REPLACE_AFTER_FINAL_BIND"
+  },
+  "findings": [],
+  "open_finding_ids": []
+}

@@ -1,0 +1,51 @@
+{
+  "schema_version": "1.0",
+  "article_id": "A1",
+  "purpose": "SINGLE_SOURCE_FOR_IMAGE_ASSETS_ALT_CAPTIONS_AND_PLACEMENT",
+  "text_baseline_sha256": "REPLACE_AFTER_TEXT_LOCK",
+  "assets": [
+    {
+      "ordinal": 1,
+      "coverage_zone": "LEAD",
+      "file": "images/01-lead-article-context.png",
+      "sha256": "REPLACE_AFTER_IMAGE_GENERATION",
+      "alt": "REPLACE_ME",
+      "caption": "REPLACE_ME",
+      "placement_anchor": "REPLACE_WITH_VISIBLE_TEXT_BEFORE_THE_IMAGE_MARKER",
+      "adjacent_claim_id": "REPLACE_ME",
+      "reader_job": "REPLACE_ME",
+      "placement_reason": "REPLACE_ME",
+      "prompt_or_brief": "REPLACE_WITH_THE_FINAL_IMAGE_PROMPT_OR_BRIEF",
+      "visual_review_status": "PENDING"
+    },
+    {
+      "ordinal": 2,
+      "coverage_zone": "MIDDLE",
+      "file": "images/02-middle-workflow-step.png",
+      "sha256": "REPLACE_AFTER_IMAGE_GENERATION",
+      "alt": "REPLACE_ME",
+      "caption": "REPLACE_ME",
+      "placement_anchor": "REPLACE_WITH_VISIBLE_TEXT_BEFORE_THE_IMAGE_MARKER",
+      "adjacent_claim_id": "REPLACE_ME",
+      "reader_job": "REPLACE_ME",
+      "placement_reason": "REPLACE_ME",
+      "prompt_or_brief": "REPLACE_WITH_THE_FINAL_IMAGE_PROMPT_OR_BRIEF",
+      "visual_review_status": "PENDING"
+    },
+    {
+      "ordinal": 3,
+      "coverage_zone": "CLOSING",
+      "file": "images/03-closing-checklist.png",
+      "sha256": "REPLACE_AFTER_IMAGE_GENERATION",
+      "alt": "REPLACE_ME",
+      "caption": "REPLACE_ME",
+      "placement_anchor": "REPLACE_WITH_VISIBLE_TEXT_BEFORE_THE_IMAGE_MARKER",
+      "adjacent_claim_id": "REPLACE_ME",
+      "reader_job": "REPLACE_ME",
+      "placement_reason": "REPLACE_ME",
+      "prompt_or_brief": "REPLACE_WITH_THE_FINAL_IMAGE_PROMPT_OR_BRIEF",
+      "visual_review_status": "PENDING"
+    }
+  ],
+  "manual_retelling": "PROHIBITED"
+}

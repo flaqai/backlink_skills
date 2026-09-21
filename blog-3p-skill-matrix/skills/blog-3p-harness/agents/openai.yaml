@@ -1,0 +1,4 @@
+interface:
+  display_name: "博客 3P 本地流程工具"
+  short_description: "初始化、冻结与校验可移植的博客内容项目"
+  default_prompt: "使用 $blog-3p-harness 初始化并校验一个不自动发布的博客 3P 内容项目。"

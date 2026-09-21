@@ -1,0 +1,16 @@
+{
+  "article_id": "REPLACE_ARTICLE_ID",
+  "language": "REPLACE_LANGUAGE_CODE",
+  "market": "REPLACE_TARGET_MARKET",
+  "focus_keyword": "REPLACE_FROZEN_FOCUS_KEYWORD",
+  "reader_value_promise": "State the useful answer a reader receives even if the recommendation is removed.",
+  "cta": {
+    "mode": "SECONDARY_RECOMMENDATION",
+    "anchor_text": "REPLACE_EXACT_VISIBLE_CTA_TEXT",
+    "product_name": "REPLACE_PRODUCT_NAME",
+    "product_destination_url": "https://example.com/replace-destination",
+    "product_evidence_path": "research/evidence-pack.json#/claims/replace-product-claim",
+    "reader_task_relevance": "Explain why this is a relevant secondary option for this reader task.",
+    "relationship_disclosure": "NOT_APPLICABLE_OR_EXACT_DISCLOSURE_TEXT"
+  }
+}

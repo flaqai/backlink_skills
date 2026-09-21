@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.0",
+  "purpose": "CAMPAIGN_SHARED_READONLY_EVIDENCE",
+  "records": [
+    {
+      "id": "REPLACE_WITH_STABLE_RECORD_ID",
+      "kind": "BRAND_SITE_VARIANT",
+      "status": "REPLACE_WITH_OBSERVED_STATUS",
+      "source": "https://example.com/source",
+      "observed_at": "2026-01-01T00:00:00+00:00",
+      "scope": "REPLACE_WITH_EXACT_LOCALE_MARKET_AND_READER_INTENT",
+      "query_or_page_context": "REPLACE_WITH_QUERY_OR_PAGE_CONTEXT",
+      "valid_through_or_recheck": "REPLACE_WITH_RECHECK_BOUNDARY",
+      "evidence_path": "evidence/shared/source-observation.md",
+      "reuse_decision": "REPLACE_WITH_BOUNDED_REUSE_DECISION"
+    }
+  ]
+}

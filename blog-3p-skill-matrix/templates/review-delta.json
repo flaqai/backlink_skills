@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.0",
+  "article_id": "A1",
+  "review_index_path": "reviews/review-index.json",
+  "review_index_sha256": "REPLACE_WITH_CURRENT_INDEX_SHA256",
+  "review_scope": "R_DELTA",
+  "r_delta_attempt": 1,
+  "full_review_required": false,
+  "changed_artifacts": [
+    {
+      "path": "canonical/article.html",
+      "sha256": "REPLACE_WITH_CURRENT_FILE_SHA256",
+      "change_kind": "CANONICAL_TEXT",
+      "affected_requirement_ids": [],
+      "affected_finding_ids": []
+    }
+  ]
+}

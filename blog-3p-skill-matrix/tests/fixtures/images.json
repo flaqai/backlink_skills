@@ -1,0 +1,5 @@
+[
+  {"file": "hero.png", "coverage_zone": "LEAD", "reader_job": "说明文章的整体问题", "alt": "展示三方工作流的示意图", "caption": "三方工作流"},
+  {"file": "review-loop.png", "coverage_zone": "MIDDLE", "reader_job": "解释 W 与 R 的修复循环", "alt": "展示写作与审稿循环的示意图", "caption": "中段工作流"},
+  {"file": "handoff.png", "coverage_zone": "CLOSING", "reader_job": "总结人工交付的下一步", "alt": "展示人工富文本交付页的示意图", "caption": "交付结果"}
+]

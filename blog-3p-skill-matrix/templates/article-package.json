@@ -1,0 +1,51 @@
+{
+  "schema_version": "1.5",
+  "article_id": "A1",
+  "canonical_path": "canonical/article.html",
+  "canonical_sha256": "REPLACE_AFTER_DRAFT",
+  "canonical_format": "RICH_TEXT_HTML_FRAGMENT",
+  "artifact_sources": {
+    "evidence_pack": {
+      "path": "research/evidence-pack.json",
+      "sha256": "REPLACE_AFTER_RESEARCH",
+      "role": "ARTICLE_CLAIM_AND_SEO_DECISION_INDEX"
+    },
+    "visual_manifest": {
+      "path": "canonical/visual-manifest.json",
+      "sha256": "REPLACE_AFTER_VISUALS",
+      "role": "SINGLE_SOURCE_FOR_IMAGE_ASSETS_ALT_CAPTIONS_AND_PLACEMENT"
+    },
+    "metadata": {
+      "path": "canonical/metadata.json",
+      "sha256": "REPLACE_AFTER_METADATA_LOCK",
+      "role": "SINGLE_SOURCE_FOR_TITLE_AND_SEO_METADATA"
+    },
+    "manual_retelling": "PROHIBITED"
+  },
+  "title_transfer_mode": "SEPARATE_TITLE_FIELD",
+  "heading_hierarchy_authority": "PUBLIC_READER_PAGE_VISUAL_ONLY",
+  "visual_payload_template": {
+    "id": "BLOG_3P_VISUAL_PAYLOAD",
+    "version": "3",
+    "rendering": "COMPILER_ONLY",
+    "model_authored_shell_css_js": "PROHIBITED"
+  },
+  "visual_narrative": {
+    "minimum_images": 3,
+    "required_coverage_zones": ["LEAD", "MIDDLE", "CLOSING"],
+    "manifest_source": "artifact_sources.visual_manifest",
+    "exception": null
+  },
+  "reader_value_promise": "REPLACE_ME",
+  "cta": {
+    "mode": "SECONDARY_RECOMMENDATION",
+    "anchor_text": "REPLACE_WITH_OWNER_REQUIRED_VISIBLE_CTA_TEXT",
+    "product_name": "REPLACE_ME",
+    "product_destination_url": "https://example.com/replace-me",
+    "product_evidence_path": "research/evidence-pack.json#/claims/replace-me",
+    "reader_task_relevance": "REPLACE_ME",
+    "relationship_disclosure": "NOT_APPLICABLE"
+  },
+  "review_status": "PENDING",
+  "gate_status": "PENDING"
+}

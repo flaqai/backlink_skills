@@ -1,0 +1,6 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "harnessctl.py build-article-context",
+  "article_id": "A1",
+  "note": "Generated, hash-bound context capsule. Do not hand-maintain frozen facts here."
+}

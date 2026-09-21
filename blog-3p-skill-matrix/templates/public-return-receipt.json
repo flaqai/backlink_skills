@@ -1,0 +1,10 @@
+{
+  "schema_version": "1.0",
+  "article_id": "REPLACE_ME",
+  "public_url": "https://example.com/replace-me",
+  "human_state": "HUMAN_ACCEPTED",
+  "returned_at": "2026-01-01T00:00:00Z",
+  "published_at_or_revision": "UNVERIFIED",
+  "public_visual_evidence_paths": [],
+  "known_platform_limitations": []
+}

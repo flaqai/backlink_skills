@@ -1,0 +1,29 @@
+{
+  "schema_version": "1.0",
+  "campaign_id": "REPLACE_ME",
+  "batch_id": "PUBLIC-QA-BATCH-001",
+  "gatekeeper_agent_id": "REGISTERED_CAMPAIGN_GATEKEEPER_ID",
+  "workflow_stage": "PUBLIC_QA_BATCH_READONLY",
+  "entries": [
+    {
+      "entry_id": "A1-PUBLIC-001",
+      "article_id": "A1",
+      "article_contract": {"path": "context/article-contract.json", "sha256": "REPLACE_AFTER_CONTEXT_LOCK"},
+      "article_package": {"path": "article-package.json", "sha256": "REPLACE_AFTER_PACKAGE_LOCK"},
+      "handoff_manifest": {"path": "handoff/handoff-manifest.json", "sha256": "REPLACE_AFTER_HANDOFF_CHECK"},
+      "return_receipt": {"path": "handoff/public-return-receipt.json", "sha256": "REPLACE_AFTER_HUMAN_RETURN"},
+      "public_snapshot": {"path": "evidence/public-qa/public-snapshot.json", "sha256": "REPLACE_AFTER_READONLY_SNAPSHOT"},
+      "public_url": "https://example.com/replace-me",
+      "human_state": "HUMAN_ACCEPTED",
+      "returned_at": "2026-01-01T00:00:00Z",
+      "visual_evidence_mode": "RENDERED_READER_PAGE",
+      "rendered_visual_evidence_paths": ["evidence/public-qa/rendered-page.png"],
+      "result": "PUBLIC_QA_PASSED",
+      "finding_ids": [],
+      "accepted_platform_limitations": [],
+      "attempt": 1,
+      "unverified_retry_count": 0,
+      "owner_request_id": null
+    }
+  ]
+}

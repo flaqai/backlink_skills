@@ -1,0 +1,64 @@
+{
+  "schema_version": "1.8",
+  "campaign_id": "REPLACE_ME",
+  "status": "PENDING_OWNER_PREWRITE_PLAN_CONFIRMATION",
+  "owner_confirmation_id": null,
+  "owner_confirmation_receipt": null,
+  "artifact_convention": {
+    "canonical_source": "prewrite-plan.json",
+    "owner_view_path": "prewrite-plan.md",
+    "owner_view_mode": "DETERMINISTIC_RENDERED_READ_ONLY",
+    "manual_duplicate_entry": "PROHIBITED",
+    "writer_research_remains_required": true
+  },
+  "shared_evidence_pack": {
+    "path": "evidence/shared/campaign-evidence-pack.json",
+    "sha256": "PENDING",
+    "scope": "CAMPAIGN_READONLY_BASELINE",
+    "does_not_replace_article_research": true
+  },
+  "campaign_summary": {
+    "campaign_strategy": ""
+  },
+  "article_plans": [
+    {
+      "article_id": "REPLACE_ARTICLE_ID",
+      "evidence_refs": [],
+      "task_and_audience": "",
+      "reader_value_and_secondary_cta": "",
+      "editorial_brief": "",
+      "risks_and_owner_decisions": "",
+      "topic_slot": {
+        "slot_id": "REPLACE_ARTICLE_ID-TOPIC",
+        "reader_task": "REPLACE_WITH_THE_FROZEN_READER_TASK",
+        "core_intent": "REPLACE_WITH_THE_FROZEN_CORE_INTENT",
+        "market": "REPLACE_TARGET_MARKET",
+        "differentiation_angle": "REPLACE_WITH_THE_ARTICLE_DISTINCTION",
+        "forbidden_deviations": [
+          "REPLACE_WITH_A_CONCRETE_OUT_OF_SCOPE_DIRECTION"
+        ]
+      },
+      "frozen_delivery_mapping": {
+        "article_language": "REPLACE_LANGUAGE_CODE",
+        "market": "REPLACE_TARGET_MARKET",
+        "platform": "REPLACE_OWNER_CANDIDATE_PLATFORM",
+        "account": "REPLACE_SAFE_ACCOUNT_ALIAS",
+        "fit_mode": "PRIMARY_AUDIENCE_MATCH",
+        "cross_language_exception": null
+      },
+      "evidence_posture": {
+        "mode": "METHOD_TEMPLATE_NO_EXECUTION",
+        "empirical_claims_allowed": false,
+        "claim_boundary": "REPLACE_WITH_THE_READER_FACING_BOUNDARY",
+        "evidence_paths": []
+      },
+      "review_effort": {
+        "tier": "AUTHOR_QA_INTEGRATED",
+        "quality_mode": "WQ_SHARED_CONTEXT",
+        "research_gate": "INTEGRATED_IN_AUTHOR_QA",
+        "independent_reviewer_required": false,
+        "reasons": []
+      }
+    }
+  ]
+}

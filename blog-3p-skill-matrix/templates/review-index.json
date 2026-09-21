@@ -1,0 +1,57 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "harnessctl.py build-review-index",
+  "article_id": "A1",
+  "review_effort": {
+    "tier": "AUTHOR_QA_INTEGRATED",
+    "quality_mode": "WQ_SHARED_CONTEXT",
+    "research_gate": "INTEGRATED_IN_AUTHOR_QA",
+    "independent_reviewer_required": false,
+    "reasons": []
+  },
+  "route_resolution": {
+    "planned_quality_mode": "WQ_SHARED_CONTEXT",
+    "effective_quality_mode": "WQ_SHARED_CONTEXT",
+    "status": "NOT_ESCALATED",
+    "escalation_trigger_ids": []
+  },
+  "latest_research_review": {
+    "status": "NOT_REQUIRED",
+    "coverage": "INTEGRATED_IN_AUTHOR_QA",
+    "report_path": null,
+    "report_sha256": null,
+    "reviewer_agent_id": null,
+    "reviewed_evidence_pack_sha256": null
+  },
+  "latest_author_qa": {
+    "status": "PENDING",
+    "receipt_path": null,
+    "receipt_sha256": null,
+    "author_agent_id": null,
+    "self_qa_protocol": "CANDIDATE_LOCK_ADVERSARIAL_SELF_QA_TARGETED_REPAIR_FINAL_BIND",
+    "candidate_canonical_sha256": null,
+    "canonical_sha256": null,
+    "evidence_pack_sha256": null,
+    "metadata_sha256": null,
+    "visual_manifest_sha256": null,
+    "visual_payload_sha256": null,
+    "visual_payload_markdown_sha256": null,
+    "article_package_sha256": null,
+    "open_finding_ids": []
+  },
+  "latest_full_review": {
+    "status": "NOT_REQUIRED",
+    "report_path": null,
+    "report_sha256": null,
+    "reviewer_agent_id": null,
+    "canonical_sha256": null,
+    "evidence_pack_sha256": null,
+    "metadata_sha256": null,
+    "visual_manifest_sha256": null,
+    "visual_payload_sha256": null,
+    "visual_payload_markdown_sha256": null,
+    "article_package_sha256": null
+  },
+  "last_delta": null,
+  "note": "Hash-bound quality baseline. WQ is a same-author record, not an independent R approval; only a recorded WR escalation may use latest_full_review."
+}

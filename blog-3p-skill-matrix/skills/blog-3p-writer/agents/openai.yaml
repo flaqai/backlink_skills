@@ -1,0 +1,4 @@
+interface:
+  display_name: "博客 3P 研究与写作"
+  short_description: "以连续证据链调研并撰写博客文章"
+  default_prompt: "使用 $blog-3p-writer 调研并撰写一篇有证据支撑的博客文章。"

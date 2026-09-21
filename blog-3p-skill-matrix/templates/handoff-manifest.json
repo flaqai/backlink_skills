@@ -1,0 +1,38 @@
+{
+  "schema_version": "1.0",
+  "article_id": "A1",
+  "purpose": "DERIVED_HANDOFF_ARTIFACT_AND_HASH_INDEX",
+  "visual_payload": {
+    "path": "handoff/visual-payload.html",
+    "sha256": "REPLACE_AFTER_COMPILATION"
+  },
+  "visual_payload_markdown": {
+    "path": "handoff/visual-payload.md",
+    "sha256": "REPLACE_AFTER_COMPILATION"
+  },
+  "article_package": {
+    "path": "article-package.json",
+    "sha256": "REPLACE_AFTER_PACKAGE_LOCK"
+  },
+  "metadata": {
+    "path": "canonical/metadata.json",
+    "sha256": "REPLACE_AFTER_METADATA_LOCK"
+  },
+  "visual_manifest": {
+    "path": "canonical/visual-manifest.json",
+    "sha256": "REPLACE_AFTER_VISUAL_REVIEW"
+  },
+  "review_index": {
+    "path": "reviews/review-index.json",
+    "sha256": "REPLACE_AFTER_FINAL_QUALITY"
+  },
+  "review_provenance": {
+    "source": "reviews/review-index.json#/latest_author_qa",
+    "mode": "AUTHOR_QA_COVERS_FINAL_PAYLOAD"
+  },
+  "gate_input": {
+    "requirements_traceability_path": "requirements-traceability.md",
+    "requirements_traceability_sha256": "REPLACE_AFTER_FINAL_QUALITY",
+    "gate_mode": "MANIFEST_HASH_AND_REQUIREMENTS_ONLY"
+  }
+}

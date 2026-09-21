@@ -1,0 +1,56 @@
+{
+  "schema_version": "1.3",
+  "article_id": "A1",
+  "purpose": "ARTICLE_CLAIM_AND_SEO_DECISION_INDEX",
+  "source_records": [],
+  "derived_views": {
+    "read_only_summary_paths": [],
+    "manual_duplicate_research_files": "PROHIBITED"
+  },
+  "reader_task": "REPLACE_ME",
+  "intent_and_angle": {
+    "selected": "REPLACE_ME",
+    "alternatives_rejected": []
+  },
+  "topic_slot_alignment": {
+    "frozen_slot_id": "A1-TOPIC",
+    "status": "ALIGNED",
+    "within_slot_adjustments": [],
+    "resolved_conflicts": [],
+    "active_conflict": null
+  },
+  "keyword_and_localization": {
+    "focus_keyword": "REPLACE_ME",
+    "brand_variant_evidence": [],
+    "regional_serp_evidence": [],
+    "fallback_used": false
+  },
+  "research_separation": {
+    "reader_intent_basis": {
+      "decision": "REGIONAL_SERP",
+      "selected_phrase_evidence_refs": [],
+      "notes": "Platform profile evidence is not allowed here."
+    },
+    "platform_profile_use": {
+      "mode": "NOT_USED",
+      "evidence_refs": [],
+      "used_as_keyword_or_demand_evidence": false,
+      "may_inform": ["TOPIC_FRAMING", "FORMAT_ADAPTATION"],
+      "must_not_prove": ["KEYWORD", "NATURAL_VARIANT", "SEARCH_INTENT", "LOCAL_DEMAND", "POPULARITY"]
+    }
+  },
+  "evidence_posture": {
+    "mode": "METHOD_TEMPLATE_NO_EXECUTION",
+    "empirical_claims_allowed": false,
+    "claim_boundary": "REPLACE_WITH_THE_READER_FACING_BOUNDARY",
+    "evidence_paths": [],
+    "documented_record": null
+  },
+  "claims": [],
+  "visual_jobs": [
+    {"coverage_zone": "LEAD", "adjacent_claim_id": "REPLACE_ME", "reader_job": "REPLACE_ME"},
+    {"coverage_zone": "MIDDLE", "adjacent_claim_id": "REPLACE_ME", "reader_job": "REPLACE_ME"},
+    {"coverage_zone": "CLOSING", "adjacent_claim_id": "REPLACE_ME", "reader_job": "REPLACE_ME"}
+  ],
+  "uncertainties_and_non_claims": []
+}

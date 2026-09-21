@@ -5,6 +5,27 @@ import { access, mkdir, readFile, stat, writeFile } from 'node:fs/promises';
 import { basename, delimiter, dirname, extname, join, posix } from 'node:path';
 
 const DEFAULT_CONFIG = 'writer/config/r2.config.json';
+const BOOLEAN_OPTIONS = new Set(['help', 'noCompress', 'dryRun']);
+const VALUE_OPTIONS = new Set([
+  'config',
+  'key',
+  'blogDir',
+  'date',
+  'seoName',
+  'keyword',
+  'topic',
+  'article',
+  'manifest',
+  'alt',
+  'contentType',
+  'compressionQuality',
+  'compressionFormat',
+  'compressedFile',
+  'minCompressionSavingsPercent',
+  'quality',
+  'file',
+]);
+const OPTION_ALIASES = new Map([['dry-run', 'dryRun']]);
 const args = parseArgs(process.argv.slice(2));
 
 if (args.help || !args.file) {
@@ -110,16 +131,31 @@ function parseArgs(argv) {
     const item = argv[i];
     if (item === '--help' || item === '-h') {
       parsed.help = true;
-    } else if (item.startsWith('--')) {
-      const key = item.slice(2);
-      const value = argv[i + 1];
-      if (!value || value.startsWith('--')) {
-        parsed[key] = true;
-      } else {
-        parsed[key] = value;
-        i += 1;
-      }
+      continue;
     }
+
+    if (!item.startsWith('--')) {
+      throw new Error(`Unexpected argument "${item}". Options must start with "--".`);
+    }
+
+    const optionName = item.slice(2);
+    const key = OPTION_ALIASES.get(optionName) || optionName;
+    if (!BOOLEAN_OPTIONS.has(key) && !VALUE_OPTIONS.has(key)) {
+      throw new Error(`Unknown option "${item}".`);
+    }
+
+    if (BOOLEAN_OPTIONS.has(key)) {
+      parsed[key] = true;
+      continue;
+    }
+
+    const value = argv[i + 1];
+    if (value === undefined || value.startsWith('--')) {
+      throw new Error(`Missing value for "${item}".`);
+    }
+
+    parsed[key] = value;
+    i += 1;
   }
   return parsed;
 }
@@ -150,7 +186,7 @@ Options:
                          Override the local compressed image output path
   --minCompressionSavingsPercent <number>
                          Use compressed file only when savings meet this percent; defaults to 3
-  --dryRun              Print key and URL without uploading or editing article/manifest files
+  --dryRun, --dry-run   Print key and URL without uploading or editing article/manifest files
 
 Example:
   node writer/scripts/upload-r2.mjs \\
