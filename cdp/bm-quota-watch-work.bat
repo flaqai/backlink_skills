@@ -1,9 +1,9 @@
 @echo off
-rem step -2 (2026-09-13 user): quiet window - until 2026-09-20, every day 00:00-09:00 the
-rem WHOLE quota system pauses: no sampling (= no quota queries at all), no voucher
-rem activation, no reset-time poke, and keep-alive/cookie-inject skipped too. Helper
-rem writes one skip line per round to bm-watch.log; gate.php has the same guard in case
-rem the pipeline is ever run directly. 09:00 rounds resume automatically.
+rem step -2 (2026-09-21 user): manual-pause gate only - bm-pause.flag exists = whole
+rem quota system pauses (no sampling / voucher use / poke / keep-alive). The OLD
+rem 00:00-09:00 quiet-window logic was deleted per the same 2026-09-21 directive
+rem (it had already expired on 09-20). Helper writes one skip line per round to
+rem bm-watch.log; gate.php has the same guard in case the pipeline is run directly.
 C:\BtSoft\php\82\php.exe D:\Github\backlink_skills\cdp\bm-quiet-window.php
 if %errorlevel%==1 exit /b
 rem zcode.cjs needs the user-level model config: btTask runs this bat as LocalSystem whose
@@ -11,35 +11,28 @@ rem HOME/USERPROFILE points to systemprofile (no .zcode there) - poke/resume all
 rem with "Model config is missing" until 2026-08-29. Redirect to Administrator profile.
 set "HOME=C:\Users\Administrator"
 set "USERPROFILE=C:\Users\Administrator"
-rem step -1 (2026-09-10): keep-alive for both monitor chromes EVERY round, dead-zone included.
-rem 12:26 incident: a work window swept 9225+9226 by process name (9224 survived) while the
-rem gate was in daytime dead zone - no sample path ran, so the step-2.5 heal never fired and
-rem the monitor stayed down for hours. ensure self-checks aliveness and exits in ~0.2s when up.
-rem 9227 (user-login browser) MUST be relaunched via schtasks as Administrator - SYSTEM cannot
-rem (DPAPI wipes the user's hand-login cookie jar); falls back to schtasks bm-9224-heal style.
-"C:\Program Files\nodejs\node.exe" D:\Github\backlink_skills\cdp\ensure-bm-9226.mjs >nul 2>&1
+rem step -1 (2026-09-21 quota-manager overhaul): keep-alive for the ONE dedicated
+rem quota-manager chrome (9227: own user-data-dir profile-bm-user + --proxy-server=direct://
+rem so it never rides the airtcp system proxy - prevents account IP drift). Must relaunch
+rem via schtasks bm-9227-heal as Administrator - SYSTEM cannot (DPAPI wipes the self-held
+rem login cookie jar). The old 9226 monitor instance is retired.
 curl -s -m 3 http://127.0.0.1:9227/json/version >nul 2>&1
 if %errorlevel%==1 schtasks /run /tn bm-9227-heal >nul 2>&1
-rem step 0: manual cookie from extension save-button (fast exit when no pending file)
-"C:\Program Files\nodejs\node.exe" D:\Github\backlink_skills\cdp\bm-cookie-inject.mjs >nul 2>&1
+rem (old step 0 cookie-inject DELETED, 2026-09-21 user directive: cookie is now self-held
+rem by logging in INSIDE the 9227 dedicated chrome - no import from extension/external.
+rem one-off bootstrap tool: node bm-cookie-inject.mjs 9227)
 rem step 1: window + throttle gate (php shell funcs disabled, node called by bat directly)
 C:\BtSoft\php\82\php.exe D:\Github\backlink_skills\cdp\bm-quota-gate.php
 if not %errorlevel%==1 goto :end
-rem step 2: api sample -> bm-last.json
+rem step 2: api sample -> bm-last.json (9227 dedicated instance)
 "C:\Program Files\nodejs\node.exe" D:\Github\backlink_skills\cdp\bm-quota-check.mjs > D:\Github\backlink_skills\cdp\bm-last.json 2>nul
-rem step 2.5: 9226 monitor-chrome self-heal (2026-09-10: monitoring moved to a dedicated
-rem chrome instance, isolated from the work-window 9224/9225 churn that caused the
-rem 09-02/09-08/09-09 outages. Cooldown 600s lives in bm-chrome-heal.php at this bat
-rem layer only - ensure-bm-9226.mjs itself stays unconditional)
-findstr /C:"CHROME_DOWN" D:\Github\backlink_skills\cdp\bm-last.json >nul 2>&1
+rem step 2.5: 9227 self-heal (cooldown 600s lives in bm-chrome-heal.php at this bat
+rem layer; heal action = schtasks bm-9227-heal relaunch as Administrator)
+findstr /C:"CHROME_DOWN" /C:"ALL_PORTS_DOWN" D:\Github\backlink_skills\cdp\bm-last.json >nul 2>&1
 if errorlevel 1 goto :record
 C:\BtSoft\php\82\php.exe D:\Github\backlink_skills\cdp\bm-chrome-heal.php
 if not %errorlevel%==1 goto :record
-"C:\Program Files\nodejs\node.exe" D:\Github\backlink_skills\cdp\ensure-bm-9226.mjs >> D:\Github\backlink_skills\cdp\bm-watch.log 2>&1
-rem 2026-09-10: chrome died+relaunched means the cookie jar we injected into may be wiped
-rem (disposable monitor profile, any relaunch identity). Drop the archive marker so step 0
-rem next round re-seeds the bigmodel cookie automatically - keeps sampling from going blind.
-if exist D:\Github\backlink_skills\cdp\bm-archive-injected.json del /q D:\Github\backlink_skills\cdp\bm-archive-injected.json
+schtasks /run /tn bm-9227-heal >nul 2>&1
 rem healed -> immediate re-sample so this round still lands (voucher rescue window needs data)
 "C:\Program Files\nodejs\node.exe" D:\Github\backlink_skills\cdp\bm-quota-check.mjs > D:\Github\backlink_skills\cdp\bm-last.json 2>nul
 :record
