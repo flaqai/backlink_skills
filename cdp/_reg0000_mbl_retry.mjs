@@ -1,0 +1,14 @@
+import { CDP, sleep } from './CDP.mjs';
+import fs from 'fs';
+const log = (s) => fs.writeSync(1, s + '\n');
+let tab = [...(await (await fetch('http://127.0.0.1:9224/json/list')).json())].find(t => t.type === 'page' && t.url.includes('mybloglicious'));
+const ws = new WebSocket(tab.webSocketDebuggerUrl);
+await new Promise((res, rej) => { ws.onopen = res; ws.onerror = rej; setTimeout(() => rej(new Error('ws超时')), 6000); });
+const c = new CDP(ws);
+await c.send('Target.activateTarget', { targetId: tab.id });
+await c.send('Page.enable');
+await c.send('Page.reload', { ignoreCache: true });
+await sleep(12000);
+const js = "(() => { const out=[]; for (const i of document.querySelectorAll('input,button')) { out.push(i.tagName+' name='+(i.name||'')+' id='+(i.id||'')+' type='+(i.type||'')); } return (out.join(' || ')||'EMPTY') + ' ### body=' + document.body.innerText.slice(0,120); })()";
+log(await c.evalT(js, 8000));
+ws.close(); process.exit(0);

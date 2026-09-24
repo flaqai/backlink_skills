@@ -1,0 +1,15 @@
+import { CDP, sleep } from './CDP.mjs';
+import fs from 'fs';
+const [,, domain] = process.argv;
+const base = 'http://127.0.0.1:9224';
+const tabs = await (await fetch(base+'/json/list')).json();
+const tab = tabs.find(t => t.type==='page' && t.url.includes(domain));
+const ws = new WebSocket(tab.webSocketDebuggerUrl);
+await new Promise((res,rej)=>{ws.onopen=res;ws.onerror=rej;});
+const c = new CDP(ws);
+await c.send('Page.enable');
+await c.send('Page.navigate',{url:'https://'+domain+'/posts-list'});
+await sleep(8000);
+const out = await c.eval("(function(){var N=String.fromCharCode(10);var rows=[...document.querySelectorAll('tr')].map(function(r){var t=r.innerText.split(N).join(' ~ ').slice(0,120);var a=r.querySelector('a');var lk=a?a.href:'';return t+' <<'+lk+'>';}).slice(0,15);return rows.join(N);})()");
+console.log(out);
+process.exit(0);

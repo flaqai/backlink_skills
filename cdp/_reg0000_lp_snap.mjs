@@ -1,0 +1,11 @@
+import { CDP, sleep } from './CDP.mjs';
+const list = await (await fetch('http://127.0.0.1:9224/json/list')).json();
+const tab = list.find(t => t.type === 'page' && /letterpad/.test(t.url));
+console.log('TABURL:', tab ? tab.url : 'none');
+if (!tab) process.exit(1);
+const ws = new WebSocket(tab.webSocketDebuggerUrl);
+await new Promise((res, rej) => { ws.onopen = res; ws.onerror = rej; setTimeout(rej, 8000); });
+const c = new CDP(ws);
+await c.send('Target.activateTarget', { targetId: tab.id });
+await sleep(3000);
+console.log('WHERE:', await c.evalT('location.href', 10000));

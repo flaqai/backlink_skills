@@ -1,0 +1,18 @@
+import { CDP, sleep } from './CDP.mjs';
+import { writeFileSync } from 'fs';
+await fetch('http://127.0.0.1:9224/json/new?about:blank', { method: 'PUT' });
+await sleep(300);
+const list = await (await fetch('http://127.0.0.1:9224/json/list')).json();
+const tab = list.filter(t => t.type === 'page' && /about:blank/.test(t.url)).pop();
+const ws = new WebSocket(tab.webSocketDebuggerUrl);
+await new Promise((res, rej) => { ws.onopen = res; ws.onerror = rej; });
+const c = new CDP(ws);
+await c.send('Target.activateTarget', { targetId: tab.id });
+await c.send('Page.enable');
+await c.send('Page.navigate', { url: 'https://patch.com/' });
+await sleep(9000);
+console.log('URL:', await c.evalT('location.href', 8000));
+console.log('BTNS:', await c.evalT("JSON.stringify([...document.querySelectorAll('a,button')].filter(e=>e.offsetParent&&/sign.?up|register/i.test((e.innerText||'')+(e.getAttribute('aria-label')||''))).map(function(e){var b=e.getBoundingClientRect(); return (e.innerText||e.getAttribute('aria-label')||'').trim().slice(0,25)+' @'+Math.round(b.x+b.width/2)+','+Math.round(b.y+b.height/2);}).slice(0,8))", 8000));
+const shot = await c.send('Page.captureScreenshot', {format:'png'}).catch(()=>null);
+if(shot) writeFileSync('D:/Github/seoadminC/storage/_reg0000/patch_home.png', Buffer.from(shot.data,'base64'));
+console.log('SHOT ok');

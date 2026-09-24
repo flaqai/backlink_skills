@@ -1,0 +1,15 @@
+import { CDP, sleep } from './CDP.mjs';
+import fs from 'fs';
+const list = await (await fetch('http://127.0.0.1:9224/json/list')).json();
+const page = list.find(t => t.type === 'page' && /directorynode\.com/.test(t.url));
+const ws = new WebSocket(page.webSocketDebuggerUrl);
+await new Promise((res, rej) => { ws.onopen = res; ws.onerror = rej; });
+const c = new CDP(ws);
+await c.send('Runtime.enable'); await c.send('Page.enable');
+await c.evalT(`(() => { const f = document.querySelector('iframe[src*="bframe"]'); if (f) f.scrollIntoView({ block: 'start' }); return 1; })()`, 5000);
+await sleep(800);
+const pos = await c.evalT(`(() => { const f = document.querySelector('iframe[src*="bframe"]'); if (!f) return null; const r = f.getBoundingClientRect(); return JSON.stringify({ x: r.x, y: r.y, w: r.width, h: r.height }); })()`, 5000);
+console.log('bframe pos:', pos);
+const shot = await c.send('Page.captureScreenshot', { format: 'png' });
+fs.writeFileSync('D:/Github/backlink_skills/cdp/_win2000_dn_challenge.png', Buffer.from(shot.data, 'base64'));
+console.log('shot saved');

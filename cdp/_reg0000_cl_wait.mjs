@@ -1,0 +1,14 @@
+import { CDP, sleep } from './CDP.mjs';
+import fs from 'fs';
+const log = (s) => fs.writeSync(1, s + '\n');
+let tab = [...(await (await fetch('http://127.0.0.1:9224/json/list')).json())].find(t => t.type === 'page' && t.url.includes('creatorlink'));
+const ws = new WebSocket(tab.webSocketDebuggerUrl);
+await new Promise((res, rej) => { ws.onopen = res; ws.onerror = rej; setTimeout(() => rej(new Error('ws超时')), 8000); });
+const c = new CDP(ws);
+await c.send('Page.enable');
+await sleep(9000);
+const txt = await c.evalT(`document.body ? document.body.innerText.replace(/\n+/g,' | ').slice(0,500) : 'NOBODY'`, 8000);
+log('TXT: ' + txt);
+const shot = await c.send('Page.captureScreenshot', { format: 'png' });
+fs.writeFileSync('D:/Github/seoadminC/storage/_reg0000_cl_boardpage2.png', Buffer.from(shot.data, 'base64'));
+log('SHOT DONE');

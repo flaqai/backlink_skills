@@ -1,0 +1,12 @@
+import { CDP } from './CDP.mjs';
+import fs from 'fs';
+const log = (s) => fs.writeSync(1, s + '\n');
+const t0 = Date.now();
+let tab = [...(await (await fetch('http://127.0.0.1:9224/json/list')).json())].find(t => t.type === 'page' && t.url.includes('creatorlink'));
+log('FOUND TAB ' + (Date.now() - t0) + 'ms ' + tab.url);
+const ws = new WebSocket(tab.webSocketDebuggerUrl);
+await new Promise((res, rej) => { ws.onopen = res; ws.onerror = rej; setTimeout(() => rej(new Error('ws超时')), 6000); });
+log('WS OPEN ' + (Date.now() - t0) + 'ms');
+const c = new CDP(ws);
+const r = await c.evalT('document.readyState', 5000);
+log('READY: ' + r + ' ' + (Date.now() - t0) + 'ms');

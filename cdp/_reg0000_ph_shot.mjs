@@ -1,0 +1,12 @@
+import { CDP } from './CDP.mjs';
+import { writeFileSync } from 'fs';
+const tab = [...(await (await fetch('http://127.0.0.1:9224/json/list')).json())].find(t => t.type === 'page' && /postheaven/.test(t.url));
+await fetch('http://127.0.0.1:9224/json/activate/' + tab.id).catch(() => {});
+const ws = new WebSocket(tab.webSocketDebuggerUrl);
+await new Promise(r => ws.onopen = r);
+const c = new CDP(ws);
+await c.send('Page.enable');
+const shot = await c.send('Page.captureScreenshot', { format: 'png' });
+writeFileSync('D:/Github/seoadminC/storage/_reg0000_ph_rc.png', Buffer.from(shot.data, 'base64'));
+console.log('SAVED');
+process.exit(0);

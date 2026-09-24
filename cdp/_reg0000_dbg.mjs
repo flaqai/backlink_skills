@@ -1,0 +1,18 @@
+import { CDP, sleep } from './CDP.mjs';
+import fs from 'fs';
+const log = (s) => fs.writeSync(1, s + '\n');
+let tab = [...(await (await fetch('http://127.0.0.1:9224/json/list')).json())].find(t => t.type === 'page' && t.url.includes('creatorlink'));
+log('A: tab found');
+const ws = new WebSocket(tab.webSocketDebuggerUrl);
+await new Promise((res, rej) => { ws.onopen = res; ws.onerror = rej; setTimeout(() => rej(new Error('ws超时')), 6000); });
+log('B: ws open');
+const c = new CDP(ws);
+await c.send('Page.enable');
+log('C: page.enable ok');
+await sleep(2000);
+log('D: slept');
+await c.send('Input.dispatchMouseEvent', { type: 'mouseWheel', x: 700, y: 400, deltaX: 0, deltaY: 300 });
+log('E: wheel sent');
+await sleep(2000);
+log('F: slept2');
+ws.close(); process.exit(0);

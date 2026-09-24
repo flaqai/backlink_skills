@@ -1,0 +1,21 @@
+// reg0000: Patch 终判 — 社区页email模态提交+监听
+import { attach } from "./_reg0000_attach.mjs";
+const c = await attach(/patch\.com/);
+await c.send("Network.enable");
+let sawReq = [];
+c.on(m => { if (m.method === "Network.requestWillBeSent" && /api|auth|sign|user|account/i.test(m.params.request.url) && ["POST","PATCH"].includes(m.params.request.method)) sawReq.push(m.params.request.method + " " + m.params.request.url.slice(0, 110)); });
+await c.evalT(`(() => { const inp = [...document.querySelectorAll('input[type=email]')].find(i => i.offsetParent !== null); if(!inp) return 'no'; inp.focus(); return 'ok'; })()`, 6000);
+await new Promise(rr => setTimeout(rr, 300));
+await c.send("Input.insertText", { text: "patch@92ng.com" });
+await new Promise(rr => setTimeout(rr, 900));
+console.log("VAL:", await c.evalT(`(() => { const inp = [...document.querySelectorAll('input[type=email]')].find(i => i.offsetParent !== null); return inp ? inp.value : '?'; })()`, 6000));
+const r = await c.send("Runtime.evaluate", { expression: `(() => { const inp = [...document.querySelectorAll('input[type=email]')].find(i => i.offsetParent !== null); const form = inp.closest('form'); const btn = form && form.querySelector('button[type=submit]'); if(!btn) return null; btn.scrollIntoView({block:'center'}); const rc = btn.getBoundingClientRect(); return JSON.stringify({x: rc.x + rc.width/2, y: rc.y + rc.height/2}); })()`, returnByValue: true });
+console.log("SUBMIT_BTN:", r.result.value);
+if (!r.result.value) process.exit(1);
+const { x, y } = JSON.parse(r.result.value);
+await c.send("Input.dispatchMouseEvent", { type: "mousePressed", x, y, button: "left", clickCount: 1 });
+await c.send("Input.dispatchMouseEvent", { type: "mouseReleased", x, y, button: "left", clickCount: 1 });
+await new Promise(rr => setTimeout(rr, 6000));
+console.log("REQS:", JSON.stringify(sawReq.slice(0, 8)));
+console.log("BODY:", (await c.evalT('(document.body.innerText||"").replace(/\\n+/g," | ").slice(0,350)', 8000)));
+console.log("FIELDS:", await c.evalT(`JSON.stringify([...document.querySelectorAll("input")].map(el => ({type: el.type, name: el.name||"", ph: (el.placeholder||"").slice(0,30), vis: el.offsetParent !== null})).filter(x => x.vis).slice(0,12))`, 8000));

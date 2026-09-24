@@ -1,0 +1,17 @@
+import { CDP, sleep } from './CDP.mjs';
+import { writeFileSync } from 'fs';
+const tab = [...(await (await fetch('http://127.0.0.1:9224/json/list')).json())].find(t => t.type === 'page' && /patch\.com/.test(t.url));
+const ws = new WebSocket(tab.webSocketDebuggerUrl);
+await new Promise((res, rej) => { ws.onopen = res; ws.onerror = rej; });
+const c = new CDP(ws);
+await c.send('Page.enable');
+const ev = (t, p) => c.send('Input.dispatchMouseEvent', { type: t, ...p });
+await ev('mouseMoved',{x:1293,y:36}); await sleep(200);
+await ev('mousePressed',{x:1293,y:36,button:'left',clickCount:1}); await sleep(100);
+await ev('mouseReleased',{x:1293,y:36,button:'left',clickCount:1});
+await sleep(4000);
+console.log('URL:', await c.evalT('location.href', 6000));
+console.log('MODAL:', await c.evalT("JSON.stringify([...document.querySelectorAll('input,[role=dialog],iframe')].filter(e=>e.offsetParent).map(function(e){return e.tagName+':'+(e.name||e.type||'')+(e.placeholder?':ph='+e.placeholder.slice(0,30):'')+(e.src?':if='+e.src.slice(0,60):'');}).slice(0,12))", 8000));
+const shot = await c.send('Page.captureScreenshot', {format:'png'}).catch(()=>null);
+if(shot) writeFileSync('D:/Github/seoadminC/storage/_reg0000/patch_modal.png', Buffer.from(shot.data,'base64'));
+console.log('SHOT ok');

@@ -1,0 +1,17 @@
+import { CDP, sleep } from './CDP.mjs';
+import { writeFileSync } from 'fs';
+const tab = [...(await (await fetch('http://127.0.0.1:9224/json/list')).json())].find(t => t.type === 'page' && /dreamwidth\.org/.test(t.url));
+const ws = new WebSocket(tab.webSocketDebuggerUrl);
+await new Promise((res, rej) => { ws.onopen = res; ws.onerror = rej; });
+const c = new CDP(ws);
+await c.send('Page.enable');
+await c.send('Page.navigate', { url: 'https://dreamwleoxm.dreamwidth.org/290.html' });
+await sleep(6000);
+console.log('URL:', await c.evalT('location.href', 8000));
+console.log('TITLE:', await c.evalT(`(function(){var h=document.querySelector('h1,h2,.entry-title,#entry-title'); return h? h.innerText.slice(0,60) : document.title.slice(0,60);})()`, 8000));
+console.log('LEN:', await c.evalT(`(function(){var b=document.querySelector('.entry-content,#content'); return b? b.innerText.length : -1;})()`, 8000));
+console.log('PARAS:', await c.evalT(`document.querySelectorAll('.entry-content p, #content p').length`, 6000));
+const s = await c.send('Page.captureScreenshot', { format: 'png' }).catch(() => null);
+if (s) writeFileSync('D:/Github/seoadminC/storage/_reg0000/dw_entry_live.png', Buffer.from(s.data, 'base64'));
+console.log('SHOT ok');
+process.exit(0);

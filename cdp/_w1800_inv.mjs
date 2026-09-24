@@ -1,0 +1,10 @@
+import { CDP } from './CDP.mjs';
+const [DOM] = process.argv.slice(2);
+const tabs = await (await fetch('http://127.0.0.1:9224/json/list')).json();
+const tab = tabs.find(t => (t.url || '').includes(DOM) && t.type === 'page');
+const ws = new WebSocket(tab.webSocketDebuggerUrl);
+await new Promise(r => ws.onopen = r);
+const cdp = new CDP(ws);
+const out = await cdp.eval(`(() => { const f=document.querySelector('form.dir-submit'); const bad=[...f.querySelectorAll(':invalid')].map(e=>({n:e.name||e.id||e.tagName, t:e.type, v:(e.value||'').slice(0,20), vis:!!(e.offsetWidth||e.offsetHeight)})); const tok=[...f.querySelectorAll('textarea')].map(t=>({n:t.name, len:t.value.length})); const btns=[...f.querySelectorAll('button')].map(b=>({txt:(b.textContent||'').trim().slice(0,20), type:b.type, form:b.form? 'in':'OUT'})); return JSON.stringify({bad:bad.slice(0,8), tok, btns}); })()`);
+console.log(out);
+ws.close();

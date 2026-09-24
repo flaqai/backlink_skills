@@ -1,0 +1,5 @@
+{
+  "_comment": "复制为 cdp/bm-account.json（gitignore 不随仓库走）。account_key 写入 coding_plan_quota_logs 区分账号池；poke=本机是否允许计时激活/续跑会话/抢救推（依赖本机 ZCode 登录对应账号）。",
+  "_example_C": { "account_key": "shared", "poke": true },
+  "_example_B": { "account_key": "d-独立", "poke": false }
+}

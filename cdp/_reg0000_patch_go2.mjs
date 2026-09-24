@@ -1,0 +1,29 @@
+import { CDP, sleep } from './CDP.mjs';
+import { writeFileSync } from 'fs';
+const tab = [...(await (await fetch('http://127.0.0.1:9224/json/list')).json())].find(t => t.type === 'page' && /patch\.com/.test(t.url));
+const ws = new WebSocket(tab.webSocketDebuggerUrl);
+await new Promise((res, rej) => { ws.onopen = res; ws.onerror = rej; });
+const c = new CDP(ws);
+await c.send('Page.enable');
+const ev = (t, p) => c.send('Input.dispatchMouseEvent', { type: t, ...p });
+const key = async (k, vk) => { await c.send('Input.dispatchKeyEvent',{type:'keyDown',key:k,code:k,windowsVirtualKeyCode:vk}); await c.send('Input.dispatchKeyEvent',{type:'keyUp',key:k,code:k,windowsVirtualKeyCode:vk}); };
+// 点ZIP唤起下拉
+await ev('mouseMoved',{x:681,y:334}); await sleep(150);
+await ev('mousePressed',{x:681,y:334,button:'left',clickCount:1}); await sleep(100);
+await ev('mouseReleased',{x:681,y:334,button:'left',clickCount:1});
+await sleep(2000);
+const s0 = await c.send('Page.captureScreenshot', {format:'png'}).catch(()=>null);
+if(s0) writeFileSync('D:/Github/seoadminC/storage/_reg0000/patch_dd.png', Buffer.from(s0.data,'base64'));
+// 下拉选第一项
+await key('ArrowDown', 40); await sleep(400);
+await key('Enter', 13); await sleep(1500);
+// 提交
+await ev('mouseMoved',{x:681,y:503}); await sleep(150);
+await ev('mousePressed',{x:681,y:503,button:'left',clickCount:1}); await sleep(100);
+await ev('mouseReleased',{x:681,y:503,button:'left',clickCount:1});
+await sleep(8000);
+console.log('URL:', await c.evalT('location.href', 6000));
+console.log('BODY:', await c.evalT("document.body.innerText.split(String.fromCharCode(10)).filter(function(s){return s.trim();}).slice(0,14).join(' | ')", 8000));
+const s = await c.send('Page.captureScreenshot', {format:'png'}).catch(()=>null);
+if(s) writeFileSync('D:/Github/seoadminC/storage/_reg0000/patch_go3.png', Buffer.from(s.data,'base64'));
+console.log('SHOT ok');

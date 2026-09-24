@@ -1,0 +1,15 @@
+import { CDP, sleep } from './CDP.mjs';
+import fs from 'fs';
+const [,, domain, outfile] = process.argv;
+let tab = [...(await (await fetch('http://127.0.0.1:9224/json/list')).json())].find(t => t.type === 'page' && t.url.includes(domain));
+await fetch('http://127.0.0.1:9224/json/activate/' + tab.id).catch(()=>{});
+const ws = new WebSocket(tab.webSocketDebuggerUrl);
+await new Promise((res, rej) => { ws.onopen = res; ws.onerror = rej; setTimeout(() => rej(new Error('ws超时')), 6000); });
+const c = new CDP(ws);
+await c.send('Target.activateTarget', { targetId: tab.id });
+await c.send('Page.enable');
+await sleep(1500);
+const shot = await c.send('Page.captureScreenshot', { format: 'png' });
+fs.writeFileSync(outfile, Buffer.from(shot.data, 'base64'));
+fs.writeSync(1, 'SHOT ' + outfile + '\n');
+ws.close(); process.exit(0);

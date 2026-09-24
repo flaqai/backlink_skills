@@ -1,0 +1,10 @@
+import { CDP, sleep } from './CDP.mjs';
+const t = await (await fetch('http://127.0.0.1:9224/json/new?about:blank', { method: 'PUT' })).json();
+const ws = new WebSocket(t.webSocketDebuggerUrl);
+await new Promise((res, rej) => { ws.onopen = res; ws.onerror = rej; });
+const c = new CDP(ws);
+await c.send('Page.enable'); await c.send('Runtime.enable'); await c.send('DOM.enable');
+await c.goto('https://paper.wf/leoxm/za-bank-hui-lu-yu-duo-bi-chong-zhang-hu-huan-hui-shi-ji-he-shou-xu-fei-de-zhen-s', 30000);
+await sleep(6000);
+console.log(await c.eval(`(() => JSON.stringify({ title: document.title.slice(0,50), links: [...document.querySelectorAll('article a[href], .body a[href], #post body a[href], .e-content a[href]')].map(a => a.href).filter(h => h.includes('zakaihu')).slice(0,3), allZk: document.documentElement.innerHTML.includes('zakaihu') }))()`));
+await fetch('http://127.0.0.1:9224/json/close/' + t.id);

@@ -1,0 +1,14 @@
+import { CDP, sleep } from './CDP.mjs';
+const [,, domain] = process.argv;
+const base = 'http://127.0.0.1:9224';
+const tabs = await (await fetch(base+'/json/list')).json();
+const tab = tabs.find(t => t.type==='page' && t.url.includes(domain));
+const ws = new WebSocket(tab.webSocketDebuggerUrl);
+await new Promise((res,rej)=>{ws.onopen=res;ws.onerror=rej;});
+const c = new CDP(ws);
+await c.send('Page.enable');
+await c.send('Page.navigate',{url:'https://'+domain+'/posts-list'});
+await sleep(8000);
+const out = await c.eval("(function(){var N=String.fromCharCode(10);var links=[...document.querySelectorAll('a')].filter(function(a){return /edit-post|post\?|action=/.test(a.href)||a.innerText.indexOf('Preview')>=0||a.innerText.indexOf('View')>=0}).map(function(a){return a.innerText.trim().slice(0,30)+' => '+a.href});var statuses=[...document.querySelectorAll('tr')].map(function(r){var s=r.querySelector('.post-state, [class*=status]');return s?s.innerText:'';});return 'LINKS:'+links.slice(0,20).join(N)+'<<S>>STATES:'+statuses.join(' | ');})()");
+console.log(out);
+process.exit(0);

@@ -1,0 +1,14 @@
+import { CDP, sleep } from './CDP.mjs';
+import { writeFileSync } from 'fs';
+let tab = [...(await (await fetch('http://127.0.0.1:9224/json/list')).json())].find(t => t.type === 'page' && t.url.includes('strikingly.com'));
+console.log('tab url:', tab.url.slice(0,100));
+const ws = new WebSocket(tab.webSocketDebuggerUrl);
+await new Promise((res, rej) => { ws.onopen = res; ws.onerror = rej; });
+const c = new CDP(ws);
+await c.send('Page.enable');
+await sleep(2000);
+const shot = await c.send('Page.captureScreenshot', { format: 'png' });
+writeFileSync('D:/Github/seoadminC/storage/_stri-now.png', Buffer.from(shot.data, 'base64'));
+const st = await c.eval(`document.body.innerText.slice(0,250)`);
+console.log('text:', st);
+process.exit(0);

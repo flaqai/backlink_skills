@@ -1,0 +1,12 @@
+import { CDP, sleep } from './CDP.mjs';
+let tab = await (await fetch('http://127.0.0.1:9224/json/new?about:blank', { method: 'PUT' })).json();
+await fetch('http://127.0.0.1:9224/json/activate/' + tab.id).catch(() => {});
+const ws = new WebSocket(tab.webSocketDebuggerUrl);
+await new Promise((res, rej) => { ws.onopen = res; ws.onerror = rej; });
+const c = new CDP(ws);
+await c.send('Page.enable'); await c.send('Runtime.enable');
+await c.goto('https://www.strikingly.com/s/sites', 40000).catch(e => console.log('goto warn:', e.message));
+await sleep(5000);
+const st = await c.eval(`(function(){ return location.href + ' || ' + document.body.innerText.slice(0,600); })()`);
+console.log('== state ==\n', st);
+process.exit(0);

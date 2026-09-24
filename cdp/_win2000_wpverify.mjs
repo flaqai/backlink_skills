@@ -1,0 +1,11 @@
+import { CDP, sleep } from './CDP.mjs';
+const t = await (await fetch('http://127.0.0.1:9224/json/new?' + encodeURIComponent('https://leoxmseo2.wordpress.com/?p=34'), { method: 'PUT' })).json();
+await fetch('http://127.0.0.1:9224/json/activate/' + t.id);
+const ws = new WebSocket(t.webSocketDebuggerUrl);
+await new Promise((res, rej) => { ws.onopen = res; ws.onerror = rej; });
+const cdp = new CDP(ws);
+await cdp.send('Runtime.enable');
+await sleep(15000);
+const r = await cdp.eval(`(() => JSON.stringify({ url: location.href, title: document.title.slice(0,80), links: [...document.querySelectorAll('article a[href]')].map(a => a.href).filter(h => h.includes('generatorforhouse')), bodyLen: document.body.innerText.length }))()`);
+console.log(r);
+await fetch('http://127.0.0.1:9224/json/close/' + t.id);
