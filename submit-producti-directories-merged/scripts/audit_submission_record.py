@@ -50,6 +50,7 @@ REQUIRED_CONTROLS = {
     "Canonical URL",
     "Source-list reference",
     "Batch authorization reference",
+    "Automation authorization",
     "Execution-shard size",
     "Maximum active tabs",
     "Credential policy",
@@ -58,6 +59,8 @@ REQUIRED_CONTROLS = {
     "Ambiguous-outcome policy",
     "Ranking manipulation prohibited",
 }
+
+ALLOWED_AUTOMATION_AUTHORIZATION = {"authorized", "not authorized"}
 
 REQUIRED_SITE_FIELDS = {
     "Queue ID",
@@ -232,8 +235,205 @@ def parse_record(text: str) -> tuple[dict[str, str], list[dict[str, object]]]:
         end = headings[index + 1].start() if index + 1 < len(headings) else len(text)
         body = text[heading.end():end]
         fields = parse_fields(body)
-        sites.append({"name": heading.group(1).strip(), "fields": fields})
+        sites.append({"name": heading.group(1).strip(), "fields": fields, "body": body})
     return controls, sites
+
+
+def audit_lean(text: str, controls: dict, sites: list,
+               record_scope: str = "shareable") -> dict[str, object]:
+    """Validate lean facts and action limits, not a prescribed browser procedure."""
+    errors: list[str] = []
+    warnings: list[str] = []
+    empty = {"", "none", "not applicable", "not checked", "n/a"}
+    required_controls = {
+        "Campaign ID", "Canonical URL", "Batch authorization reference",
+        "Automation authorization",
+    }
+    missing = sorted(key for key in required_controls if not controls.get(key, "").strip())
+    if missing:
+        errors.append("missing campaign controls: " + ", ".join(missing))
+    if not is_public_http_url(controls.get("Canonical URL", "")):
+        errors.append("Canonical URL must be a public http(s) URL")
+    if record_scope not in {"shareable", "local-controlled"}:
+        errors.append("invalid record scope")
+    if controls.get("Record scope", "shareable") != record_scope:
+        errors.append("Record scope mismatch")
+    authorization = controls.get("Automation authorization", "").lower()
+    if authorization not in {"authorized", "not authorized"}:
+        errors.append("Automation authorization must be authorized or not authorized")
+
+    # Protected local storage is explicit. Never print the detected secret.
+    sensitive = []
+    if re.search(r"[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}", text, re.I):
+        sensitive.append("raw email address found")
+    if re.search(
+        r"^-\s*(?:password|passcode|otp|recovery code|cookie|session id|oauth code|magic link)"
+        r"\s*:\s*(?!not applicable|none|redacted)\S+", text, re.I | re.M
+    ):
+        sensitive.append("secret-bearing field found")
+    for value in re.findall(r"https?://[^\s)>]+", text):
+        try:
+            parsed = urlsplit(value)
+            keys = {key.lower() for key, _ in parse_qsl(parsed.query)}
+            if parsed.username or parsed.password or keys & SENSITIVE_QUERY_KEYS:
+                sensitive.append("URL with sensitive authentication data found")
+                break
+        except ValueError:
+            errors.append("malformed URL in record")
+    if record_scope == "shareable":
+        errors.extend(sensitive)
+    else:
+        warnings.extend(message + "; protected local record must not be shared"
+                        for message in sensitive)
+
+    statuses: Counter[str] = Counter()
+    manual: list[str] = []
+    seen_ids: set[str] = set()
+    seen_urls: set[str] = set()
+    seen_email_roots: set[str] = set()
+    final_form = {"submitted", "awaiting approval", "published", "submission outcome unknown"}
+    in_progress = {"form in progress", "draft saved"}
+    duplicate_values = ALLOWED_DUPLICATE_CHECKS | {"not available"}
+
+    def present(fields: dict, key: str) -> bool:
+        return fields.get(key, "").strip().lower() not in empty
+
+    for site in sites:
+        name, fields = str(site["name"]), site["fields"]
+        required = {"Queue ID", "Website", "Status", "Duplicate check",
+                    "Exact result", "Evidence reference", "Last checked"}
+        missing = sorted(key for key in required if not fields.get(key, "").strip())
+        if missing:
+            errors.append(f"{name}: missing fields: " + ", ".join(missing))
+        status = fields.get("Status", "")
+        statuses[status or "missing"] += 1
+        if status not in ALLOWED_STATUSES:
+            errors.append(f"{name}: invalid status")
+        queue = fields.get("Queue ID", "")
+        if queue in seen_ids:
+            errors.append(f"{name}: duplicate Queue ID")
+        seen_ids.add(queue)
+        website = fields.get("Website", "")
+        if not is_public_http_url(website):
+            errors.append(f"{name}: Website must be a public http(s) URL")
+        if "Target URL" in fields and not is_public_http_url(fields["Target URL"]):
+            errors.append(f"{name}: Target URL must be a public http(s) URL")
+        normalized = normalize_url(website)
+        if normalized in seen_urls:
+            errors.append(f"{name}: duplicate normalized website; resume the existing record")
+        seen_urls.add(normalized)
+        duplicate = fields.get("Duplicate check", "")
+        if duplicate not in duplicate_values:
+            errors.append(f"{name}: invalid Duplicate check")
+
+        counts: dict[str, tuple[int, int]] = {}
+        for field in ("Form submit attempts", "Login-link requests", "Email send attempts"):
+            if field not in fields:
+                counts[field] = (0, 1)
+                continue
+            match = re.fullmatch(r"(\d+)\s*/\s*(\d+)", fields[field])
+            if not match:
+                errors.append(f"{name}: {field} must use count/limit")
+                counts[field] = (0, 1)
+                continue
+            count, limit = map(int, match.groups())
+            counts[field] = count, limit
+            if limit < 1 or count > limit:
+                errors.append(f"{name}: {field} exceeds its authorized limit")
+        form, form_limit = counts["Form submit attempts"]
+        login, login_limit = counts["Login-link requests"]
+        email, email_limit = counts["Email send attempts"]
+
+        if form_limit > 1 and not present(fields, "Retry authorization"):
+            errors.append(f"{name}: multiple form attempts require site-specific Retry authorization")
+        if login_limit > 1 and not present(fields, "Login-link authorization"):
+            errors.append(f"{name}: extra login-link requests require their own authorization")
+        if email_limit != 1 or email > 1:
+            errors.append(f"{name}: Gmail Send allows one attempt only")
+        if (form + login + email or status in final_form | in_progress | EMAIL_STATUSES
+                or present(fields, "Fields entered")) and authorization != "authorized":
+            errors.append(f"{name}: action without batch automation authorization")
+        if (form > 1 or login > 0) and not re.search(
+                r"### Attempt log\s*\n\s*\n?-\s+\S", str(site.get("body", ""))):
+            errors.append(f"{name}: multiple submits or login-link requests need an Attempt log")
+        if status in final_form and form < 1:
+            errors.append(f"{name}: form outcome requires Form submit attempts")
+        if status in in_progress | final_form or form:
+            if duplicate == "not checked":
+                errors.append(f"{name}: record the native duplicate check before form execution")
+            if duplicate in {"inconclusive", "not available",
+                              "inconclusive — user-authorized direct attempt",
+                              "not available — user-authorized direct attempt"}:
+                if not present(fields, "Direct-attempt authorization"):
+                    errors.append(f"{name}: incomplete dedup requires Direct-attempt authorization")
+        if status == "duplicate — no action":
+            if duplicate not in {"duplicate confirmed", "user-confirmed duplicate"}:
+                errors.append(f"{name}: duplicate status requires a confirmed duplicate")
+            if email:
+                errors.append(f"{name}: do not send again after prior outreach")
+        if status != "not attempted" and not present(fields, "Evidence reference"):
+            errors.append(f"{name}: observed outcome needs evidence")
+        surface = fields.get("Content surface", "not applicable")
+        if surface not in ALLOWED_CONTENT_SURFACES:
+            errors.append(f"{name}: invalid Content surface")
+        if surface in NO_ACTION_CONTENT_SURFACES:
+            if (form or email or present(fields, "Fields entered")
+                    or status not in {"not attempted", "ineligible", "terminated by user"}
+                    or present(fields, "Handover page")):
+                errors.append(f"{name}: content editors are no-action")
+        if status == "not attempted" and (form or email or present(fields, "Fields entered")):
+            errors.append(f"{name}: not attempted contradicts recorded actions")
+
+        channel = fields.get("Action channel", WEB_FORM_CHANNEL)
+        if channel not in ALLOWED_ACTION_CHANNELS:
+            errors.append(f"{name}: invalid Action channel")
+        if status in EMAIL_STATUSES or email or channel == OFFICIAL_CONTACT_EMAIL_CHANNEL:
+            if channel != OFFICIAL_CONTACT_EMAIL_CHANNEL:
+                errors.append(f"{name}: official Contact sends need their own Action channel")
+            if status in final_form:
+                errors.append(f"{name}: email sends cannot claim a directory outcome")
+            for field in ("Email authorization", "Account alias", "Recipient contact alias",
+                          "Contact-source evidence", "Mailbox pre-send check"):
+                if not present(fields, field):
+                    errors.append(f"{name}: official Contact email requires {field}")
+            check = fields.get("Mailbox pre-send check", "")
+            if check not in ALLOWED_MAILBOX_PRE_SEND_CHECKS:
+                errors.append(f"{name}: invalid Mailbox pre-send check")
+            if check == "prior outreach found" and (email or status != "duplicate — no action"):
+                errors.append(f"{name}: prior outreach must not be sent again")
+            if check == "inconclusive — user-authorized direct attempt" and not present(
+                    fields, "Direct-attempt authorization"):
+                errors.append(f"{name}: incomplete mailbox search needs direct-attempt authorization")
+            if status in EMAIL_STATUSES and email != 1:
+                errors.append(f"{name}: email outcome requires exactly one Send")
+            root = normalize_platform_domain(fields.get("Platform domain", website))
+            host = normalize_platform_domain(website)
+            if not root or "." not in root or not (host == root or host.endswith("." + root)):
+                errors.append(f"{name}: invalid official Contact platform root")
+            if root in seen_email_roots:
+                errors.append(f"{name}: duplicate official Contact email scope")
+            seen_email_roots.add(root)
+
+        if status in {"submission outcome unknown", EMAIL_UNKNOWN_STATUS}:
+            for field in ("Handover page", "Outcome checks"):
+                if not present(fields, field):
+                    errors.append(f"{name}: unclear outcome requires {field}")
+        if status == "blocked — manual verification":
+            manual.append(name)
+            if not present(fields, "Handover page"):
+                errors.append(f"{name}: preserve the manual-verification page")
+            if not (present(fields, "Fields entered") or present(fields, "Prefill limitation")):
+                errors.append(f"{name}: prefill fields or explain the verification wall")
+        if status == "published" and not is_public_http_url(fields.get("Public listing URL", "")):
+            errors.append(f"{name}: published requires a public listing URL")
+    if not sites:
+        errors.append("record contains no website sections")
+    return {
+        "valid": not errors, "errors": errors, "warnings": warnings,
+        "record_format": "SPD lean 1", "record_scope": record_scope,
+        "total_sites": len(sites), "status_counts": dict(sorted(statuses.items())),
+        "verification_counts": {}, "manual_verification_queue": manual,
+    }
 
 
 def audit(text: str) -> dict[str, object]:
@@ -242,6 +442,11 @@ def audit(text: str) -> dict[str, object]:
     warnings: list[str] = []
     controls, sites = parse_record(text)
 
+    if controls.get("Record format") == "SPD lean 1":
+        return audit_lean(text, controls, sites, "shareable")
+    if "Record format" in controls:
+        errors.append("unsupported Record format; expected SPD lean 1 or a legacy V1 record")
+
     missing_controls = sorted(REQUIRED_CONTROLS - controls.keys())
     if missing_controls:
         errors.append("missing campaign controls: " + ", ".join(missing_controls))
@@ -249,6 +454,9 @@ def audit(text: str) -> dict[str, object]:
         errors.append("SPD version must be V1 Batch")
     if controls.get("Ranking manipulation prohibited", "").lower() != "yes":
         errors.append("Ranking manipulation prohibited must be yes")
+    automation_authorization = controls.get("Automation authorization", "").lower()
+    if automation_authorization not in ALLOWED_AUTOMATION_AUTHORIZATION:
+        errors.append("Automation authorization must be authorized or not authorized")
     declared_scope = controls.get("Record scope", "shareable")
     if "Record scope" not in controls:
         warnings.append("Record scope missing; treating this legacy record as shareable")
@@ -419,6 +627,8 @@ def audit(text: str) -> dict[str, object]:
             errors.append(f"{name}: executed without a passed legitimacy gate")
         if status in EXECUTED and fields.get("Authorization reference", "") in {"", "not applicable", "none"}:
             errors.append(f"{name}: executed without an authorization reference")
+        if status in EXECUTED and automation_authorization != "authorized":
+            errors.append(f"{name}: executed without batch automation authorization")
         if status in EXECUTED and verification in UNRESOLVED_VERIFICATION:
             errors.append(f"{name}: executed while verification remained unresolved")
         direct_attempt_checks = {

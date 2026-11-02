@@ -1,18 +1,4 @@
 interface:
   display_name: "外链自动提交合并版"
-  short_description: "受控执行目录投递与官方 Contact 邮件申请"
-  default_prompt: >
-    Use $submit-producti-directories-merged for this authorized directory-submission
-    batch. First read SKILL.md and EXEC-CHECKLIST.md, then confirm the current
-    batch's verified inputs, authorization, browser backend, and record. Discover
-    each site's current entry from its homepage, classify content editors as
-    no-action, and use visual inspection only if ordinary discovery finds no
-    verified entry. Before filling, complete native on-site dedup with canonical
-    URL variants, bare domain, brand spelling, and title variants; verify every
-    candidate's actual outbound URL. Treat an incomplete dedup check as a single
-    authorized direct attempt only when the current batch explicitly permits it.
-    Preserve populated verification and ambiguous-result tabs for human review.
-    Final Submit, Publish, and Gmail Send are one-shot actions with no retry.
-    For CDP failures, form hypotheses and perform a minimal read-only check before
-    at most one materially changed retry. Keep public records free of raw contact
-    data and credentials, audit them, and report every site separately at closeout.
+  short_description: "批量完成免费目录投递与联络申请，保留证据和人工接力页面"
+  default_prompt: "使用 $submit-producti-directories-merged 处理本批站点；依据现有资料和授权自主选择方法，防止重复，遇验证保留填好的页面，按实际回执逐站交付。"

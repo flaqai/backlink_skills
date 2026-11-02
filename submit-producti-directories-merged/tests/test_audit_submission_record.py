@@ -25,6 +25,7 @@ Last updated: 2026-08-18T16:00:00+08:00
 - Canonical URL: https://example-product.test/
 - Source-list reference: source-list-001
 - Batch authorization reference: auth-batch-001
+- Automation authorization: authorized
 - Execution-shard size: 20
 - Maximum active tabs: 5
 - Credential policy: aliases only; no secrets in record
@@ -123,6 +124,15 @@ class AuditTests(unittest.TestCase):
     def test_valid_submitted_record(self) -> None:
         result = MODULE.audit(record(site()))
         self.assertTrue(result["valid"], result["errors"])
+
+    def test_executed_record_requires_batch_automation_authorization(self) -> None:
+        text = record(site()).replace(
+            "- Automation authorization: authorized",
+            "- Automation authorization: not authorized",
+        )
+        result = MODULE.audit(text)
+        self.assertFalse(result["valid"])
+        self.assertIn("Q-001 — Directory: executed without batch automation authorization", result["errors"])
 
     def test_non_shareable_record_scope_fails(self) -> None:
         text = record(site()).replace(

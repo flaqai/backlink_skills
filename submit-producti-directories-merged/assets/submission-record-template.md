@@ -1,72 +1,33 @@
-# [Campaign name] — SPD V1 Batch Record
-
-Last updated: [ISO-8601 timestamp]
+# [批次名称] — SPD 投递记录
 
 ## Campaign controls
 
-- SPD version: V1 Batch
-- Campaign ID: [opaque ID]
-- Product canonical ID: [opaque product ID]
-- Canonical URL: [public URL]
-- Source-list reference: [controlled reference]
-- Batch authorization reference: [opaque authorization ID]
-- Execution-shard size: [number]
-- Maximum active tabs: [number]
-- Credential policy: aliases only; no secrets in record
-- Evidence policy: controlled evidence IDs only
-- Duplicate policy: never execute a completed or pending idempotency key
-- Ambiguous-outcome policy: backend, mailbox, and public-page checks before retry
-- Ranking manipulation prohibited: yes
+- Record format: SPD lean 1
+- Campaign ID: [批次标识]
+- Canonical URL: [已核实的规范网址]
+- Batch authorization reference: [本批授权引用]
+- Automation authorization: [authorized / not authorized]
 - Record scope: shareable
 
-## Source list
+## [站点编号] — [站点名称]
 
-1. [submission URL]
-
-## [Queue ID] — [Website name]
-
-> `Content surface` 对非内容编辑器入口填 `not applicable`。若仅识别到短贴、长文或无法分类的内容编辑器，填相应的 `— no action` 值并保留分类证据；不得填写内容、存草稿、交人工、提交或发布。
-
-- Queue ID: [stable ID]
-- Website: [normalized submission URL]
-- Platform domain: [domain]
-- Route: [directory listing / claim / product profile]
-- Account alias: [alias or not applicable]
-- Idempotency key: [domain|product|account|route]
-- Execution shard: [shard ID]
-- Legitimacy gate: [passed / failed]
-- Authorization reference: [opaque authorization ID]
+- Queue ID: [站点编号]
+- Website: [当前公开入口网址]
 - Status: not attempted
-- Action channel: web form
-- Recipient contact alias: not applicable
-- Contact-source evidence: not applicable
-- Mailbox pre-send check: not applicable
-- Mailbox pre-send evidence: not applicable
-- Email send attempts: 0
-- Gmail send receipt: not applicable
-- Content surface: not applicable
-- Content-surface evidence: not applicable
-- Verification preflight: not checked
 - Duplicate check: not checked
-- Duplicate evidence: not applicable
-- Direct-attempt authorization: not applicable
-- CDP retry decision: not applicable
-- CDP retry evidence: not applicable
-- Outcome-check attempts: 0
-- Handover page: not applicable
-- Fields entered: none
-- Fields omitted: all
-- Agreements/subscriptions: none
-- Submit timestamp: not submitted
-- Exact result: not attempted
+- Exact result: 尚未操作
 - Evidence reference: not applicable
-- Public listing URL: not applicable
-- Backend checked: not applicable
-- Mailbox checked: not applicable
-- Public page checked: not applicable
-- Last checked: [ISO-8601 timestamp]
-- Follow-up: [action, owner alias, deadline]
+- Last checked: [含时区的日期时间]
 
-### Attempt log
-
-- [ISO-8601 timestamp] | event_id=[opaque ID] | action=[canonical action] | result=[result] | evidence=[opaque reference]
+<!-- 实际需要时添加以下字段，具体状态见 references/status-model.md。
+选择子页：Target URL: [用户提前限定范围内的合适子页]；不适合时用批次 Canonical URL，在现有说明中简记原因
+一次提交：Form submit attempts: 1/1
+去重未能确认后直接尝试：Direct-attempt authorization: [授权引用]
+多次提交：Retry authorization: [该站及次数授权]，并写 Attempt log
+登录链接请求：Login-link requests: 1/1
+人工验证：Handover page、Fields entered、Follow-up
+提交结果不明：Handover page、Outcome checks
+公开收录：Public listing URL
+官方联络邮件：Action channel、Email authorization、Account alias、Recipient contact alias、
+Contact-source evidence、Mailbox pre-send check、Email send attempts（各为独立字段）。
+普通站不填写邮件字段。 -->

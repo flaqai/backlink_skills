@@ -1,125 +1,32 @@
-# 外链自动提交合并版 — SPD V1 Batch workflow
+# 执行参考：只在遇到对应问题时读取
 
-## 1. Preflight the campaign
+规则以 [SKILL.md](../SKILL.md) 为准。以下为可选做法，不增加逐站确认或固定执行门槛。
 
-Create one verified product profile with approved short, medium, and long descriptions; pricing; categories; contact aliases; policy URLs; social handles; and asset references. Separate public facts from credentials and controlled evidence.
+## 浏览器连接与失败定位
 
-Record:
+- 复用已验证的工具和运行时。连接前确认当前 profile、调试端口和页面清单；CDP target 的 `page` 是标签页，`iframe` 单独处理。只连业务页，保持原会话。
+- 模块、WebSocket 或 REPL（交互执行器）不兼容时，定位运行时和依赖；若有正常的独立脚本就复用，不反复试同一段代码。新脚本先做只读连接和页面读取。
+- “未找到元素”先确认当前页面、iframe、弹层或刷新状态；超时先区分本机连接、加载中与站点报错。根据证据修正，再试一次有变化的操作；是否换电脑操作由当前授权和现场情况决定。
+- 重试记录只写有用的错误、原因、改变和结果，不要求普通站填写诊断字段。任何换工具或重连都不会重置最终动作次数。
 
-- campaign ID and `SPD version: V1 Batch`;
-- product canonical ID and canonical URL;
-- source-list reference and authorization reference;
-- execution-shard size and maximum active tabs;
-- permitted actions, scope, approver alias, approval time, and expiry;
-- prohibited actions, including payment, reciprocal-site modification, and DNS changes unless separately approved.
+## 搜索不可靠
 
-## 2. Normalize and deduplicate
+固定查询集见主技能。真实触发搜索并核验相关候选外链；重复查询仍给出同一批模糊结果时，不继续翻全站。补查有希望的后台或列表后记 `inconclusive`（未能确认）；没有搜索能力记 `not available`。已授权的直接尝试继续，未授权且影响提交时才问缺口。不得把超时、旧页面或“没看到”记成已去重。
 
-For every source URL:
+## 字段不持久、上传与刷新
 
-1. lowercase the hostname;
-2. remove fragments and tracking parameters;
-3. preserve route parameters required to reach the form only in controlled evidence;
-4. derive `platform domain | product canonical ID | account alias | route`;
-5. merge exact and tracking-only duplicates;
-6. search existing records and public listings before scheduling a final action.
+先选定免费档再填写。框架受控字段可用原生输入方式写入，回读名称、网址、描述和必填项；值被清空再换有效填写方式。上传等待成功或按钮解锁信号，不因等待而重复上传/点击。确实超时保留进度交人工。
 
-Assign a stable queue ID. Never renumber existing entries after execution begins.
+## 短暂回执
 
-## 3. Run fast triage
+优先工具已有的事件、页面变化或即时读屏。回执可能一闪即逝时，可在点击前监听提交响应并在点击后短时采样，保存最早明确回执；采样在工具内完成，不把每次读页都变成模型往返。不要求所有站安装特定 CDP 函数或固定采样频率。
+明确原生回执就记录；缺失或矛盾时再用网络响应、后台、邮箱、公开页中最有用的一项核验。无后台不是“未提交”；同页成功也不需要网址跳转。
 
-Inspect enough page state to classify the route without entering product fields.
+## 官方联络邮件
 
-Pass only legitimate, relevant product-directory routes with a usable submission or claim path. Remove or isolate unavailable, paid-link-only, forced-reciprocal, unrelated, unreleased-only, and terms-prohibited routes.
+先核验当前批次发送授权、Gmail 发件身份和站点官方 Contact/投稿/资源推荐来源。查当前记录和 Gmail Sent、Drafts、All Mail，避免相同产品向同一目标重复发信。正文用站点语言，说明真实产品、规范网址和相关性，请对方自愿考虑收录；不请求代发短贴、文章、dofollow 或排名保证。
+发送前回读发件人、单一收件人、主题、正文及链接，CC/BCC 留空。每目标最多一封首封邮件，无自动跟进、换地址重发。发送回执只证明已发送；没有明确回执时查当前撰写页或已发送副本，保留页，绝不再次发送。记录使用发件和收件别名。
 
-Classify passing routes by operational lane:
+## 人工接力
 
-- direct form;
-- account required;
-- official-contact email;
-- registration email required;
-- manual verification likely;
-- verification unavailable before form;
-- unknown interactive route.
-
-## 4. Create execution shards
-
-Split the passing queue by route and browser capacity. Configure shard size explicitly; a practical default may be chosen for local resources, but it is not a search-engine safety threshold.
-
-Within each shard:
-
-1. order account and email-verification work first;
-2. order short-lived verification tokens immediately before their forms;
-3. cap active tabs at the recorded limit;
-4. keep one queue cursor and one immutable attempt log;
-5. isolate browser profiles when account identity or session ownership differs.
-
-## 5. Run verification preflight
-
-Visit every site in the shard before form entry. Expose the earliest verification or login boundary. Attempt only ordinary native automatic verification. Preserve interactive challenges in their original tabs and add them to the manual queue.
-
-Record one state:
-
-- `automatic verification passed`;
-- `awaiting manual verification`;
-- `manual verification completed`;
-- `verification unavailable before form`;
-- `verification expired/reset`;
-- `no verification presented`;
-- `deferred by user`.
-
-Do not bypass challenges or move issued challenges between browser profiles.
-
-## 6. Resolve one manual queue
-
-Present site, queue ID, browser tab, challenge type, exact blocker, and required user action. After user completion, immediately re-inspect each tab and record whether the challenge completed, expired, reset, or remained blocked.
-
-Do not keep solved short-lived tokens waiting behind unrelated work.
-
-## 7. Execute form lanes
-
-Process eligible items sequentially within a profile:
-
-1. confirm authorization and idempotency;
-2. confirm verification validity;
-3. fill approved facts and the nearest truthful category;
-4. leave unknown optional fields blank;
-5. keep optional subscriptions off;
-6. verify free/paid plan and reciprocal requirements;
-7. submit only when the final action is allowed;
-8. capture exact server text and controlled evidence reference;
-9. advance the queue cursor only after the record is saved.
-
-Never retry an ambiguous final action. For a form, mark `submission outcome unknown`, then inspect the account backend, mailbox, and public search before any future attempt. For an official Contact email, use the email-specific unknown state in §7.1 instead.
-
-## 7.1 Execute an official Contact-email lane
-
-Use this lane only when the current batch explicitly authorizes one-to-one official Contact email outreach and names the signed-in Gmail sender alias.
-
-1. Obtain the recipient only from the target site's own Contact, submit, resource-recommendation, tool-listing, or partnership page; record the public source as controlled evidence and keep the actual address out of a shareable record.
-2. Search the campaign record and Gmail Sent, Drafts, and All Mail using the product brand, canonical URL, target domain, and contact route. A prior draft, sent message, or conversation is `duplicate — no action`; never start another message.
-3. Verify the Gmail `From` alias, the one recipient, blank CC/BCC, and a concise truthful request tailored to the target. Do not request dofollow, reciprocal links, ranking guarantees, a short post, a long article, or guest-content publication.
-4. Click `Send` once. Record the native Gmail receipt or matching Sent copy as controlled evidence. `email sent — awaiting reply` proves only Gmail sent the message; it does not prove delivery, a reply, a listing, a link, or publication.
-5. If the send result is unclear, make two or three read-only checks of compose/thread, Sent/All Mail, and Drafts/Outbox. Preserve the Gmail page and record `email send outcome unknown`; never send again, follow up, or reply automatically.
-
-## 8. Recover without replay
-
-- Re-inspect after navigation, modal changes, user interaction, or page reloads.
-- Reacquire accessibility elements instead of using stale identifiers.
-- Retry transient loading once in the current tab and once in a fresh tab.
-- Resume from the first queue item without a terminal or pending state.
-- Never reopen completed idempotency keys for final action.
-- Preserve exact error text and distinguish site failure from local browser failure.
-
-## 9. Close the batch
-
-Audit the record, reconcile ambiguous entries, and report:
-
-- total source URLs, normalized routes, duplicates removed, and routes rejected;
-- eligible queue size and completed shards;
-- submitted, awaiting approval, awaiting email verification, published, unknown outcome, blocked, unavailable, paid-only, and ineligible;
-- official Contact emails sent, email send outcomes unknown, and any independently verified link placements, reported separately;
-- manual-verification queue size and completion rate;
-- operator time, verified submissions per hour, recovery rate, and outstanding queue.
-
-Do not equate `submitted` with `published` or use volume as evidence of SEO value.
+仅将当前可执行范围内的表单交接。先填已核实字段与素材，留在原验证页；字段被验证墙挡住时如实说明。用户完成验证后先读当前状态，有成功回执就收尾；需要验证码和提交连续完成时请用户立即提交，模型随后只读核验。短贴/长文编辑器不适用交接流程。
