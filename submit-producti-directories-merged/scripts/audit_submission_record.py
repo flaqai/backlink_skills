@@ -104,6 +104,7 @@ NO_ACTION_CONTENT_SURFACES = ALLOWED_CONTENT_SURFACES - {"not applicable"}
 WEB_FORM_CHANNEL = "web form"
 OFFICIAL_CONTACT_EMAIL_CHANNEL = "official contact email"
 ALLOWED_ACTION_CHANNELS = {WEB_FORM_CHANNEL, OFFICIAL_CONTACT_EMAIL_CHANNEL}
+USER_REPORTED_SUBMISSION = "submitted — user reported"
 EMAIL_SENT_STATUS = "email sent — awaiting reply"
 EMAIL_UNKNOWN_STATUS = "email send outcome unknown"
 EMAIL_STATUSES = {EMAIL_SENT_STATUS, EMAIL_UNKNOWN_STATUS}
@@ -261,6 +262,9 @@ def audit_lean(text: str, controls: dict, sites: list,
     authorization = controls.get("Automation authorization", "").lower()
     if authorization not in {"authorized", "not authorized"}:
         errors.append("Automation authorization must be authorized or not authorized")
+    form_authorization = controls.get("Form authorization", "").lower()
+    if "Form authorization" in controls and form_authorization not in {"prefill only", "submit allowed"}:
+        errors.append("Form authorization must be prefill only or submit allowed")
 
     # Protected local storage is explicit. Never print the detected secret.
     sensitive = []
@@ -307,7 +311,7 @@ def audit_lean(text: str, controls: dict, sites: list,
             errors.append(f"{name}: missing fields: " + ", ".join(missing))
         status = fields.get("Status", "")
         statuses[status or "missing"] += 1
-        if status not in ALLOWED_STATUSES:
+        if status not in ALLOWED_STATUSES and status != USER_REPORTED_SUBMISSION:
             errors.append(f"{name}: invalid status")
         queue = fields.get("Queue ID", "")
         if queue in seen_ids:
@@ -343,22 +347,28 @@ def audit_lean(text: str, controls: dict, sites: list,
         form, form_limit = counts["Form submit attempts"]
         login, login_limit = counts["Login-link requests"]
         email, email_limit = counts["Email send attempts"]
+        submitted_by = fields.get("Form submitted by", "").lower()
+        if "Form submitted by" in fields and submitted_by not in {"user", "automation"}:
+            errors.append(f"{name}: Form submitted by must be user or automation")
+        if form_authorization == "prefill only" and form:
+            errors.append(f"{name}: prefill only does not authorize automated form submission")
 
         if form_limit > 1 and not present(fields, "Retry authorization"):
             errors.append(f"{name}: multiple form attempts require site-specific Retry authorization")
         if login_limit > 1 and not present(fields, "Login-link authorization"):
             errors.append(f"{name}: extra login-link requests require their own authorization")
         if email_limit != 1 or email > 1:
-            errors.append(f"{name}: Gmail Send allows one attempt only")
-        if (form + login + email or status in final_form | in_progress | EMAIL_STATUSES
+            errors.append(f"{name}: official Contact email allows one send attempt only")
+        if (form + login + email or status in in_progress | EMAIL_STATUSES
+                or (status in final_form and submitted_by != "user")
                 or present(fields, "Fields entered")) and authorization != "authorized":
             errors.append(f"{name}: action without batch automation authorization")
         if (form > 1 or login > 0) and not re.search(
                 r"### Attempt log\s*\n\s*\n?-\s+\S", str(site.get("body", ""))):
             errors.append(f"{name}: multiple submits or login-link requests need an Attempt log")
-        if status in final_form and form < 1:
+        if status in final_form and form < 1 and submitted_by != "user":
             errors.append(f"{name}: form outcome requires Form submit attempts")
-        if status in in_progress | final_form or form:
+        if status in in_progress or form or (status in final_form and submitted_by != "user"):
             if duplicate == "not checked":
                 errors.append(f"{name}: record the native duplicate check before form execution")
             if duplicate in {"inconclusive", "not available",
@@ -373,6 +383,8 @@ def audit_lean(text: str, controls: dict, sites: list,
                 errors.append(f"{name}: do not send again after prior outreach")
         if status != "not attempted" and not present(fields, "Evidence reference"):
             errors.append(f"{name}: observed outcome needs evidence")
+        if status == USER_REPORTED_SUBMISSION and present(fields, "Public listing URL"):
+            errors.append(f"{name}: user report cannot claim a verified public listing")
         surface = fields.get("Content surface", "not applicable")
         if surface not in ALLOWED_CONTENT_SURFACES:
             errors.append(f"{name}: invalid Content surface")
@@ -390,7 +402,7 @@ def audit_lean(text: str, controls: dict, sites: list,
         if status in EMAIL_STATUSES or email or channel == OFFICIAL_CONTACT_EMAIL_CHANNEL:
             if channel != OFFICIAL_CONTACT_EMAIL_CHANNEL:
                 errors.append(f"{name}: official Contact sends need their own Action channel")
-            if status in final_form:
+            if status in final_form or status == USER_REPORTED_SUBMISSION:
                 errors.append(f"{name}: email sends cannot claim a directory outcome")
             for field in ("Email authorization", "Account alias", "Recipient contact alias",
                           "Contact-source evidence", "Mailbox pre-send check"):

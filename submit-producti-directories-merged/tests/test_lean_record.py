@@ -44,6 +44,60 @@ def site(status: str = "submitted", extra: str = "", duplicate: str = "cleared",
 
 
 class LeanRecordTests(unittest.TestCase):
+    def test_prefill_only_allows_filling_but_rejects_an_automated_submit(self):
+        prepared = site("form in progress", extra="- Fields entered: name and URL")
+        completed = site(extra="- Form submit attempts: 1/1")
+        prepared_record = record(prepared).replace(
+            "- Automation authorization: authorized",
+            "- Automation authorization: authorized\n- Form authorization: prefill only",
+        )
+        completed_record = record(completed).replace(
+            "- Automation authorization: authorized",
+            "- Automation authorization: authorized\n- Form authorization: prefill only",
+        )
+        self.assertTrue(MODULE.audit(prepared_record)["valid"])
+        result = MODULE.audit(completed_record)
+        self.assertFalse(result["valid"])
+        self.assertTrue(any("prefill only" in error for error in result["errors"]))
+
+    def test_prefill_only_accepts_receipt_after_the_user_submits(self):
+        block = site(extra="- Form submitted by: user")
+        text = record(block).replace(
+            "- Automation authorization: authorized",
+            "- Automation authorization: authorized\n- Form authorization: prefill only",
+        )
+        result = MODULE.audit(text)
+        self.assertTrue(result["valid"], result["errors"])
+        self.assertEqual(result["status_counts"], {"submitted": 1})
+        contradictory = text + "\n- Form submit attempts: 1/1\n"
+        self.assertFalse(MODULE.audit(contradictory)["valid"])
+
+    def test_user_report_does_not_require_an_automation_attempt(self):
+        block = site("submitted — user reported", duplicate="not checked").replace(
+            "Native receipt or observed blocker; controlled evidence has the actual text",
+            "User reported submitting this listing; no receipt checked",
+        ).replace("ev-current-action", "user-message-001")
+        result = MODULE.audit(record(block, authorization="not authorized"))
+        self.assertTrue(result["valid"], result["errors"])
+        self.assertEqual(result["status_counts"], {"submitted — user reported": 1})
+
+    def test_user_report_and_site_receipt_count_separately(self):
+        reported = site("submitted — user reported", queue="Q2",
+                        website="https://other-directory.test/submit").replace(
+            "Native receipt or observed blocker; controlled evidence has the actual text",
+            "User reported submitting this listing",
+        ).replace("ev-current-action", "user-message-002")
+        result = MODULE.audit(record(site(extra="- Form submit attempts: 1/1") + reported))
+        self.assertTrue(result["valid"], result["errors"])
+        self.assertEqual(result["status_counts"], {"submitted": 1, "submitted — user reported": 1})
+
+    def test_user_report_cannot_claim_a_verified_public_listing(self):
+        block = site("submitted — user reported",
+                     extra="- Public listing URL: https://directory.test/product/tool")
+        result = MODULE.audit(record(block))
+        self.assertFalse(result["valid"])
+        self.assertTrue(any("verified public listing" in e for e in result["errors"]))
+
     def test_target_subpage_is_optional_and_not_the_directory_entry(self):
         block = site(extra="- Form submit attempts: 1/1")
         selected = block + "- Target URL: https://product.test/tools/image-tool\n"

@@ -1,4 +1,4 @@
 interface:
   display_name: "外链自动提交合并版"
   short_description: "批量完成免费目录投递与联络申请，保留证据和人工接力页面"
-  default_prompt: "使用 $submit-producti-directories-merged 处理本批站点；依据现有资料和授权自主选择方法，防止重复，遇验证保留填好的页面，按实际回执逐站交付。"
+  default_prompt: "使用 $submit-producti-directories-merged 开批，默认用 CDP；按启动模板预填已知资料，只确认缺项，齐全后按本批授权执行。"
