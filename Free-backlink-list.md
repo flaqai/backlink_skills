@@ -1,6 +1,6 @@
 # 免费外链渠道清单
 
-这是 Flaq AI 团队在产品推广过程中整理的公开渠道清单，共包含 743 个网站或提交入口。清单已移除历史提交状态，并为每个网站补充一段简短说明，便于先理解网站类型，再决定是否进一步核验。
+这是 Flaq AI 团队在产品推广过程中整理的公开渠道清单，共包含 746 个网站或提交入口。清单已移除历史提交状态，并为每个网站补充一段简短说明，便于先理解网站类型，再决定是否进一步核验。
 
 ## 数据来源与本次复核
 
@@ -776,6 +776,9 @@
 | 741 | [https://justgotfound.com/](<https://justgotfound.com/>) | justgotfound.com：公开网站或产品发现渠道；当前页面没有足够信息，具体用途与受众需再次核验。当前链接指向网站首页或相关功能页，具体入口需再次确认。 | — | — |
 | 742 | [https://desifounder.com/](<https://desifounder.com/>) | Desifounder（desifounder.com）：是创业产品发布、公司发现或独立开发者资源平台。当前链接指向网站首页或相关功能页，具体入口需再次确认。 | — | — |
 | 743 | [https://shipybara.com/](<https://shipybara.com/>) | Shipybara（shipybara.com）：是创业产品发布、公司发现或独立开发者资源平台。当前链接指向网站首页或相关功能页，具体入口需再次确认。 | — | — |
+| 744 | [https://pwa.directory/submit](<https://pwa.directory/submit>) | PWA Directory（pwa.directory）：是可安装渐进式网页应用（PWA）的精选目录。当前链接指向免费提交入口；站点另有可选的付费快速通道。 | — | 2026-11-05 核验：入口可访问（运营方自荐） |
+| 745 | [https://webapps.directory/submit](<https://webapps.directory/submit>) | WebApps Directory（webapps.directory）：是在浏览器中运行的网页应用（设计/开发工具、编辑器、转换器、游戏等）的精选目录。当前链接指向免费提交入口；站点另有可选的付费快速通道。 | — | 2026-11-05 核验：入口可访问（运营方自荐） |
+| 746 | [https://boilerplates.directory/submit](<https://boilerplates.directory/submit>) | Boilerplates Directory（boilerplates.directory）：按技术栈、定价模式和功能比较 SaaS 脚手架与启动模板的目录。当前链接指向免费提交入口。 | — | 2026-11-05 核验：入口可访问（运营方自荐） |
 
 ## 维护说明
 
