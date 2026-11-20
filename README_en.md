@@ -28,7 +28,7 @@ This is not a one-click link-spam tool. It does not promise acceptance, dofollow
 | [`linkedin-writer`](writer/linkedin-writer/SKILL.md) | LinkedIn Articles and newsletters | Topic research, business depth, thought leadership, SEO settings, publishing pack |
 | [`medium-writer`](writer/medium-writer/SKILL.md) | Medium stories and Publication submissions | Topic and Publication fit, author perspective, narrative craft, AI disclosure, publishing pack |
 | [`wechat-writer`](writer/wechat-writer/SKILL.md) | WeChat Official Account articles | Chinese topic planning, claim ledger, mobile readability, titles, digest, review, delivery pack |
-| [Backlink candidate list](Free-backlink-list.md) | Finding candidates to recheck | 743 websites with individual Chinese summaries, batch/date, and operational notes |
+| [Backlink candidate list](Free-backlink-list.md) | Finding candidates to recheck | 746 websites with individual Chinese summaries, batch/date, and operational notes |
 
 ## Choose a submission skill
 
@@ -40,7 +40,7 @@ When uncertain, start with V2 on 5–10 candidates. Move a larger approved list 
 
 ## Public backlink candidate list
 
-The repository publishes the list as [Markdown](Free-backlink-list.md). It contains 743 websites or submission routes. The historical submission-status column has been removed, and every website now has an individual Chinese summary describing its likely purpose and channel type.
+The repository publishes the list as [Markdown](Free-backlink-list.md). It contains 746 websites or submission routes. The historical submission-status column has been removed, and every website now has an individual Chinese summary describing its likely purpose and channel type.
 
 The filename retains the team's internal “Free Backlink List” label, but not every entry is currently free or usable. The data intentionally preserves paid, closed, unavailable, reciprocal-link, article-only, duplicate, and unverified routes. Statuses are historical source notes, not independently verified current facts. Recheck every destination before using it and never copy a historical submission status into a new product campaign.
 

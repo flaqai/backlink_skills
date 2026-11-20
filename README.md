@@ -28,7 +28,7 @@
 | [`linkedin-writer`](writer/linkedin-writer/SKILL.md) | LinkedIn Article、newsletter、B2B 长文 | LinkedIn 话题研究、商务深度、专业观点、SEO 设置和发布包 |
 | [`medium-writer`](writer/medium-writer/SKILL.md) | Medium story、Publication 投稿、教程、随笔和案例 | Topic/Publication 匹配、作者视角、叙事结构、AI 披露和发布包 |
 | [`wechat-writer`](writer/wechat-writer/SKILL.md) | 微信公众号长文、教程、观点、热点解读和复盘 | 中文选题、证据账本、移动端阅读、标题摘要、审稿和微信交付包 |
-| [免费外链渠道清单](Free-backlink-list.md) | 自己筛选候选目录、社区和内容渠道 | 743 个网站分别配有中文简介，并保留批次/日期和实操备注 |
+| [免费外链渠道清单](Free-backlink-list.md) | 自己筛选候选目录、社区和内容渠道 | 746 个网站分别配有中文简介，并保留批次/日期和实操备注 |
 
 ## 两种外链提交方式
 
@@ -68,7 +68,7 @@
 
 仓库开源了我们整理、尝试或待核验的候选渠道：
 
-- [Free-backlink-list.md](Free-backlink-list.md) 包含 **743 个网站或提交入口**；
+- [Free-backlink-list.md](Free-backlink-list.md) 包含 **746 个网站或提交入口**；
 - 清单已经移除历史提交状态，避免把其他产品的执行结果误用到新任务；
 - 每个网站都补充了独立的中文简介，说明它大致属于产品目录、AI 工具导航、创业社区、软件评测、内容平台、企业目录或表单入口中的哪一类；
 - 备注保留了批次/日期、收费提示、验证问题和历史实操结果；无来源、无月份的旧流量数字已经移除。
